@@ -1,38 +1,65 @@
 const { response, request } = require("express");
 var mercadopago = require('mercadopago');
+
 const Integration = require("../models/integration");
 const Transaction = require("../models/transaction");
+const Registrant = require("../models/registrant");
 
 const createOrder = async (req = request, res = response) => {
-    const { integration_id } = req.body;
     try {
-        const integration = await Integration.findOne({ _id: integration_id, isDelete:false, isActive:true });
-        if(!integration){
-            return res.status(404).json({
-                "result": false
+        const { items } = req.body;
+        const integration = req.integration
+
+        let items_order = [];
+        let registrants = [];
+        const transaction = new Transaction({
+            created_at: new Date(),
+            integration,
+            status: 'empty'
+        });
+        items.forEach(async item => {
+            let unit_price = parseInt(item.Price.replace(",", "").replace(integration.item_currency, ""));
+            items_order.push({
+                "title": item.Package + " (" + item["Full Name"] + ")",
+                "quantity": 1,
+                "currency_id": integration.item_currency,
+                "unit_price": unit_price,
             });
-        }
+            const registrant = new Registrant({
+                email: item["Email Address"],
+                price: unit_price,
+                transaction,
+                swoogo_event_id: integration.event_id
+            });
+            registrants.push(registrant);
+            await registrant.save();
+        });
+
+        transaction.registrants = registrants
+
+        integration.transactions.push(transaction);
+        await Promise.all([
+            transaction.save(),
+            integration.save()
+        ]);
+
         mercadopago.configure({
             access_token: integration.access_token
         });
         const result = await mercadopago.preferences.create({
-            items: [{
-                "id": integration.id,
-                "title": integration.item_title,
-                "quantity": 1,
-                "currency_id": integration.item_currency,
-                "unit_price": Number(integration.item_price)
-            }],
+            items: items_order,
+            metadata: { transaction },
             back_urls: {
                 success: process.env.DOMAIN + "/api/payments/success",
                 pending: process.env.DOMAIN + "/api/payments/pending",
                 failure: process.env.DOMAIN + "/api/payments/failure"
             },
-            notification_url: process.env.DOMAIN + "/api/payments/webhook?integration_id=" + integration.id
-        })
+            notification_url: `${process.env.DOMAIN}/api/payments/webhook?integration_id=${integration.id}`
+        });
+
         res.json({
-            "result": true,
-            "data": result.body.init_point
+            "data": result.body,
+            integration
         })
     } catch (error) {
         res.status((typeof error.status != "undefined") ? error.status : 500).json({
@@ -75,26 +102,38 @@ const webhook = async (req = request, res = response) => {
                 access_token: integration.access_token
             });
             data = await mercadopago.payment.findById(payment.id);
-            const transaction = new Transaction({
-                created_at: new Date(),
-                integration,
-                status: data.response.status,
-                amount: data.response.transaction_amount,
-                response: data.response
-            });
-            integration.transactions.push(transaction);
-            await Promise.all([
-                 transaction.save(),
-                 integration.save()
-            ]);
+            const metadata = data.body.metadata;
+            // const registrantsMeta = data.metadata.items;
+
+            let transaction = await Transaction.findById(metadata.transaction.id);
+
+            if (transaction && metadata.transaction.status != data.body.status) {
+                transaction.status = data.body.status;
+                transaction.amount = data.body.transaction_amount;
+                transaction.response = data;
+                await Promise.all([
+                    transaction.save()
+                ]);
+            }
+            // const transaction = new Transaction({
+            //     created_at: new Date(),
+            //     integration,
+            //     registrant: data.body.metadata.registrant,
+            //     status: data.response.status,
+            //     amount: data.response.transaction_amount,
+            //     response: data.response
+            // });
+            // integration.transactions.push(transaction);
+
             res.json({
                 "result": true,
-                "data": integration
+                "data": data
             })
         }
         res.status(200);
 
     } catch (error) {
+        console.log(error);
         res.status((typeof error.status != "undefined") ? error.status : 500).json({
             "result": false,
             "data": error

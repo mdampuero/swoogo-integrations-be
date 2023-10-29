@@ -19,6 +19,10 @@ const TransactionSchema = Schema({
     response:{
         type: Schema.Types.Mixed
     },
+    registrants: [{ 
+        type: Schema.ObjectId, 
+        ref: 'Transaction' 
+    }]
 })
 
 TransactionSchema.methods.toJSON = function () {
