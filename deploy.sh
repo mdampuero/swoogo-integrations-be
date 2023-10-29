@@ -6,4 +6,4 @@ do
         m) message=${OPTARG};;
     esac
 done
-git add . && git commit -m '${message}';
+git add . && git commit -m '${message}' && git push;
