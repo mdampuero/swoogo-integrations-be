@@ -23,14 +23,9 @@ const checkFieldByType = async (req = request, res, next) => {
             if (typeof body.access_token == "undefined" || !body.access_token)
                 errors.push(buildError("access_token", "El campo 'access_token' es requerido", "access_token"));
 
-            // if (typeof body.item_title == "undefined" || !body.item_title)
-            //     errors.push(buildError("item_title", "El campo 'item_title' es requerido", "item_title"));
-
-            // if (typeof body.item_currency == "undefined" || !body.item_currency || !['CLP'].includes(body.item_currency))
-            //     errors.push(buildError("item_currency", "El campo 'item_currency' es requerido", "item_currency"));
+            if (typeof body.item_currency == "undefined" || !body.item_currency || !['CLP'].includes(body.item_currency))
+                errors.push(buildError("item_currency", "El campo 'item_currency' es requerido", "item_currency"));
             
-            // if (typeof body.item_price == "undefined" || !body.item_price)
-            //     errors.push(buildError("item_price", "El campo 'item_price' es requerido", "item_price"));
             break;
     }
     if (errors.length > 0) {
