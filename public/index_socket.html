@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sign-In</title>
+</head>
+<body>
+    <h1>Socket Client</h1>
+    <button onclick="emit()">Emitir</button>
+    <script src="http://dev.swoogo-integration:8080/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        socket.on('connect', () => {
+            console.log("Conectado")
+        })
+        socket.on('disconnect', () => {
+            console.log("Desconetado")
+        })
+        socket.on('devolver-mensaje', (payload) => {
+            console.log(payload)
+        })
+        function emit(){
+            console.log("emit")
+            socket.emit('mensaje','Desde el cliente', (callback) => {
+                console.log(callback)
+            })
+        }
+        </script>
+</body>
+
+</html>
