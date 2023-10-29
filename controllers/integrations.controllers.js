@@ -23,7 +23,7 @@ const integrationsGet = async (req = request, res = response) => {
 
 const integrationsTransactions = async (req, res = response) => {
     const { id } = req.params;
-    const transactions = await Transaction.find({ integration: id }).populate({
+    const transactions = await Transaction.find({ integration: id, status: { $ne: 'empty' } }).populate({
         path: "registrants",
         model: "Registrant"
     });
@@ -44,7 +44,7 @@ const integrationsGetOne = async (req, res = response) => {
     //         select: "email"
     //     }
     // })
-    
+
     res.json({
         integration
     })
@@ -57,7 +57,7 @@ const integrationsStats = async (req, res = response) => {
 }
 
 const integrationsPost = async (req, res = response) => {
-    const { id, ...body }= req.body;
+    const { id, ...body } = req.body;
     const integration = new Integration(body);
     await integration.save();
     res.json({
