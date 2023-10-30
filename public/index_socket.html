@@ -13,21 +13,28 @@
     <script src="https://swoogo-integrations-be-production.up.railway.app/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
-        socket.on('connect', () => {
-            console.log("Conectado")
+        // socket.on('connect', () => {
+        //     console.log("Cliente: Conectado")
+        // })
+        // socket.on('disconnect', () => {
+        //     console.log("Cliente: Desconetado")
+        // })
+        // socket.on('devolver-mensaje', (payload) => {
+        //     console.log(payload)
+        // })
+        socket.on('message',(payload) => {
+            if(payload.transaction_id=='1234'){
+                if(payload.action=='continue'){
+                    console.log('Continuar')
+                }
+            }
         })
-        socket.on('disconnect', () => {
-            console.log("Desconetado")
-        })
-        socket.on('devolver-mensaje', (payload) => {
-            console.log(payload)
-        })
-        function emit(){
-            console.log("emit")
-            socket.emit('mensaje','Desde el cliente', (callback) => {
-                console.log(callback)
-            })
-        }
+        // function emit(){
+        //     console.log("emit")
+        //     socket.emit('mensaje','Desde el cliente', (callback) => {
+        //         console.log(callback)
+        //     })
+        // }
         </script>
 </body>
 
