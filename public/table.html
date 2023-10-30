@@ -1,0 +1,203 @@
+<html>
+
+<head>
+    <script>
+        if (typeof registrantUpdateUrl === 'undefined') {
+            registrantUpdateUrl = '/frontend/registrant/-action-?eventId=125154&pageId=4001075';
+        } else {
+            oldRegistrantUpdateUrl = registrantUpdateUrl;
+            registrantUpdateUrl = '/frontend/registrant/-action-?eventId=125154&pageId=4001075';
+        }
+        eventSlug = 'ingrammicro-fondazo2023';
+
+        var __TRANSLATIONS = { "Close": "Cerrar", "Loading": "Loading" };
+        window.jQuery || document.write('<script src="https://assets.swoogo.com/downloads/jquery.min.js"><\/script>');</script>
+</head>
+
+<body>
+    <form id="registrant-form" class="form-vertical" action="/demo-pago-chile/begin?i=VWmNwCPJ2ISstxHj-Pv3QO76GElklwgF"
+        method="post" autocomplete="off" enctype="multipart/form-data">
+        <div id="w_38609517" class="widget v_48653169 swoogo-reg-summary">
+            <div class="mt-medium mb-medium">
+                <h2 id="w_38609517_label" class="title mt-none">Registrant Details</h2>
+                <div class="responsive-table-overflow">
+                    <table class="table table-striped responsive-table mb-none table-condensed"
+                        aria-labelledby="w_38609517_label">
+                        <thead>
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Email Address</th>
+                                <th>Registrant Type</th>
+                                <th>Package</th>
+                                <th class="text-right">Price</th>
+                                <th aria-labelledby="w_38609517_registrant_actions"><span
+                                        id="w_38609517_registrant_actions" class="hidden">Registrant actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>test tet</td>
+                                <td><a href="mailto:dsadsa@dsadsa.com">dsadsa@dsadsa.com</a></td>
+                                <td>Attendee</td>
+                                <td>Paquete ejemplo</td>
+                                <td class="text-right 30804014-individual_gross">CLP1,000</td>
+                                <td class="text-center hidden-print buttons">
+                                    <div class="btn-group btn-group-sm">
+
+                                        <a class="btn btn-default open-as-modal"
+                                            href="/frontend/registrant/show-reg-details?eventId=134889&amp;wid=38609517&amp;uid=651d8045cd804"
+                                            title="Registrant Details" role="button"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>test tet</td>
+                                <td><a href="mailto:dsadsa@dsadsa.com">dsadsa@dsadsa.com</a></td>
+                                <td>Attendee</td>
+                                <td>Paquete ejemplo</td>
+                                <td class="text-right 30804014-individual_gross">CLP1,000</td>
+                                <td class="text-center hidden-print buttons">
+                                    <div class="btn-group btn-group-sm">
+
+                                        <a class="btn btn-default open-as-modal"
+                                            href="/frontend/registrant/show-reg-details?eventId=134889&amp;wid=38609517&amp;uid=651d8045cd804"
+                                            title="Registrant Details" role="button"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-standard registration-check-alert" name="continue" value="continue"
+            role="button"><span>Continue</span> <i class="fas fa-arrow-circle-right "></i></button>
+    </form>
+    <script type="text/javascript" src="https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js"></script>
+    <script src="https://swoogo-integrations-be-production.up.railway.app/socket.io/socket.io.js"></script>
+    <script>
+        const widgetId = "38609517";
+        const integration_id = "653ea75c98ef615ed8aeac6b";
+        const gateway = "http://localhost:8080/";
+        const socket = io();
+        const registrantForm = "#registrant-form"
+        var count = 0;
+        var intervalId;
+        var transaction_id = "";
+        function isFormOK() {
+            let isOK = true;
+            $(registrantForm + " :input").each(function (index, element) {
+                if ($(element).attr("aria-invalid") == "true") {
+                    isOK = false;
+                    return;
+                }
+
+            });
+            return isOK;
+        }
+        var makeJsonFromTable = function (tableID) {
+            var tbl = jQuery(tableID)
+            var tblhead = jQuery(tbl).find("thead")
+            var tblbody = jQuery(tbl).find("tbody")
+            var tblbodyCount = jQuery(tbl).find("tbody>tr").length;
+            var header = [];
+            var JObjectArray = [];
+            jQuery.each(jQuery(tblhead).find("tr>th"), function (i, j) {
+                header.push(jQuery(j).text())
+            })
+            jQuery.each(jQuery(tblbody).find("tr"), function (key, value) {
+                var jObject = {};
+                for (var x = 0; x < (header.length - 1); x++) {
+                    jObject[header[x]] = jQuery(this).find("td").eq(x).text()
+                }
+                JObjectArray.push(jObject)
+
+            });
+            var jsonObject = {};
+            jsonObject["count"] = tblbodyCount
+            jsonObject["value"] = JObjectArray;
+            return JObjectArray;
+        }
+        const createOrder = async () => {
+            const jsonTable = makeJsonFromTable("#w_" + widgetId + " table[aria-labelledby=\"w_" + widgetId + "_label\"]");
+            return jQuery.ajax({
+                url: gateway + "api/payments/create-order",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(
+                    {
+                        integration_id,
+                        items: jsonTable
+                    }
+                ),
+                crossDomain: true
+            });
+        }
+        const check = async () => {
+
+            return jQuery.ajax({
+                url: gateway + "api/transactions/check",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(
+                    {
+                        transaction_id
+                    }
+                ),
+                crossDomain: true
+            });
+        }
+
+        const payment = async (btnSubmit) => {
+            try {
+                const res = await createOrder();
+                console.log(res.data)
+                transaction_id = res.data.metadata.transaction.id;
+                btnSubmit.find("span").html(res.data.metadata.labels.btnSubmit);
+                // $MPC.openCheckout({
+                //     url: res.data.sandbox_init_point,
+                //     mode: "modal",
+                //     onreturn: checkoutReturn
+                // });
+                window.open(res.data.init_point);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        const checkoutReturn = (data) => {
+            console.log(data)
+        }
+
+        jQuery(function () {
+            $(registrantForm).submit(function (e) {
+                if (transaction_id) return true;
+                e.preventDefault();
+                setTimeout(function () {
+                    if (count == 0 && isFormOK()) {
+                        count++;
+                        let btnSubmit = $(registrantForm + " button[type=\"submit\"]");
+                        btnSubmit.attr("disabled", true);
+                        payment(btnSubmit)
+                    } else if (transaction_id != "") {
+                        return true
+                    }
+                }, 500)
+                return false;
+            });
+        });
+        socket.on('message', (payload) => {
+            if (payload.transaction_id == transaction_id)
+                if (payload.action == 'themify.58ecddba064e63f7') $(registrantForm).submit(); else {
+                    processError(payload);
+                }
+        })
+        const processError = (payload) => {
+            console.log(payload)
+        }
+    </script>
+</body>
+
+</html>

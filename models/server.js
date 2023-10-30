@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors');
 const morgan = require('morgan');
 const { dbConnection } = require('../database/config');
+const { socketController } = require('../controllers/socket.controllers');
 
 class Server {
 
@@ -31,6 +32,7 @@ class Server {
         this.app.use(morgan('dev'))
         this.app.use(cors())
         this.app.use((req, res, next) => {
+            req.io = this.io
             res.header('Access-Control-Allow-Origin', '*');
             res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
             res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
@@ -51,22 +53,11 @@ class Server {
         this.app.use('/api/integrations', require('../routes/integration.routes'));
         this.app.use('/api/transactions', require('../routes/transaction.routes'));
         this.app.use('/api/webhooks', require('../routes/webhook.routes'));
+        this.app.use('/api/mocks', require('../routes/mock.routes'));
     }
 
     sockets(){
-        this.io.on('connection', socket => {
-            console.log("Conectado");
-            socket.on('disconnet', () => {
-               console.log("Desconectado")
-            })
-            socket.on('mensaje', (payload, callback) => {
-                console.log(payload);
-                callback({
-                    'msg': 'respuesta a esa peition'
-                })
-                // this.io.emit('devolver-mensaje',payload);
-             })
-        })
+        this.io.on('connection', socketController)
     }
 
     listen() {
@@ -75,5 +66,5 @@ class Server {
         })
     }
 }
-
+module.exports.io = 
 module.exports = Server;

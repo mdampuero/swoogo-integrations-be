@@ -48,7 +48,9 @@ const createOrder = async (req = request, res = response) => {
         });
         const result = await mercadopago.preferences.create({
             items: items_order,
-            metadata: { transaction },
+            metadata: { transaction, labels: {
+                btnSubmit: 'Waiting for payment'
+            } },
             back_urls: {
                 success: process.env.DOMAIN + "/api/payments/success",
                 pending: process.env.DOMAIN + "/api/payments/pending",
