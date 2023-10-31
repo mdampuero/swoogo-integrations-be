@@ -105,7 +105,6 @@ const webhook = async (req = request, res = response) => {
             });
             data = await mercadopago.payment.findById(payment.id);
             const metadata = data.body.metadata;
-            // const registrantsMeta = data.metadata.items;
 
             let transaction = await Transaction.findById(metadata.transaction.id);
 
@@ -117,15 +116,10 @@ const webhook = async (req = request, res = response) => {
                     transaction.save()
                 ]);
             }
-            // const transaction = new Transaction({
-            //     created_at: new Date(),
-            //     integration,
-            //     registrant: data.body.metadata.registrant,
-            //     status: data.response.status,
-            //     amount: data.response.transaction_amount,
-            //     response: data.response
-            // });
-            // integration.transactions.push(transaction);
+            req.io.emit("message", {
+                "transaction_id":transaction.id,
+                "action": "themify.58ecddba064e63f7"
+            });
 
             res.json({
                 "result": true,

@@ -75,16 +75,22 @@
             role="button"><span>Continue</span> <i class="fas fa-arrow-circle-right "></i></button>
     </form>
     <script type="text/javascript" src="https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js"></script>
-    <script src="https://swoogo-integrations-be-production.up.railway.app/socket.io/socket.io.js"></script>
+    <!-- <script type="text/javascript"
+        src="https://swoogo-integrations-be-production.up.railway.app/socket.io/socket.io.js"></script> -->
     <script>
         const widgetId = "38609517";
         const integration_id = "653ea75c98ef615ed8aeac6b";
         const gateway = "http://localhost:8080/";
-        const socket = io();
+        var socket;
         const registrantForm = "#registrant-form"
         var count = 0;
         var intervalId;
         var transaction_id = "";
+        function dynamicallyLoadScript(url) {
+            var script = document.createElement("script");
+            script.src = url;
+            document.head.appendChild(script);
+        }
         function isFormOK() {
             let isOK = true;
             $(registrantForm + " :input").each(function (index, element) {
@@ -153,6 +159,13 @@
 
         const payment = async (btnSubmit) => {
             try {
+                socket = io();
+                socket.on('message', (payload) => {
+                    if (payload.transaction_id == transaction_id)
+                        if (payload.action == 'themify.58ecddba064e63f7') $(registrantForm).submit(); else {
+                            processError(payload);
+                        }
+                })
                 const res = await createOrder();
                 console.log(res.data)
                 transaction_id = res.data.metadata.transaction.id;
@@ -163,6 +176,7 @@
                 //     onreturn: checkoutReturn
                 // });
                 window.open(res.data.init_point);
+
             } catch (err) {
                 console.log(err);
             }
@@ -187,13 +201,10 @@
                 }, 500)
                 return false;
             });
+            dynamicallyLoadScript('https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js');
+            dynamicallyLoadScript('https://swoogo-integrations-be-production.up.railway.app/socket.io/socket.io.js');
         });
-        socket.on('message', (payload) => {
-            if (payload.transaction_id == transaction_id)
-                if (payload.action == 'themify.58ecddba064e63f7') $(registrantForm).submit(); else {
-                    processError(payload);
-                }
-        })
+
         const processError = (payload) => {
             console.log(payload)
         }
