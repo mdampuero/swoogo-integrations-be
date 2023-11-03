@@ -12,6 +12,7 @@
 
         var __TRANSLATIONS = { "Close": "Cerrar", "Loading": "Loading" };
         window.jQuery || document.write('<script src="https://assets.swoogo.com/downloads/jquery.min.js"><\/script>');</script>
+
 </head>
 
 <body>
@@ -59,7 +60,6 @@
                                 <td class="text-right 30804014-individual_gross">CLP1,000</td>
                                 <td class="text-center hidden-print buttons">
                                     <div class="btn-group btn-group-sm">
-
                                         <a class="btn btn-default open-as-modal"
                                             href="/frontend/registrant/show-reg-details?eventId=134889&amp;wid=38609517&amp;uid=651d8045cd804"
                                             title="Registrant Details" role="button"><i class="fa fa-search"></i></a>
@@ -74,140 +74,17 @@
         <button type="submit" class="btn btn-standard registration-check-alert" name="continue" value="continue"
             role="button"><span>Continue</span> <i class="fas fa-arrow-circle-right "></i></button>
     </form>
-    <script type="text/javascript" src="https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js"></script>
+    <!-- <script type="text/javascript" src="https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js"></script> -->
     <!-- <script type="text/javascript"
         src="https://swoogo-integrations-be-production.up.railway.app/socket.io/socket.io.js"></script> -->
+    <script type="text/javascript" src="http://dev.swoogo-integration:8080/sdk/swoogo-integration.1.0.0.js"></script>
     <script>
         const widgetId = "38609517";
         const integration_id = "653ea75c98ef615ed8aeac6b";
         const gateway = "http://localhost:8080/";
-        var socket;
-        const registrantForm = "#registrant-form"
-        var count = 0;
-        var intervalId;
-        var transaction_id = "";
-        function dynamicallyLoadScript(url) {
-            var script = document.createElement("script");
-            script.src = url;
-            document.head.appendChild(script);
-        }
-        function isFormOK() {
-            let isOK = true;
-            $(registrantForm + " :input").each(function (index, element) {
-                if ($(element).attr("aria-invalid") == "true") {
-                    isOK = false;
-                    return;
-                }
-
-            });
-            return isOK;
-        }
-        var makeJsonFromTable = function (tableID) {
-            var tbl = jQuery(tableID)
-            var tblhead = jQuery(tbl).find("thead")
-            var tblbody = jQuery(tbl).find("tbody")
-            var tblbodyCount = jQuery(tbl).find("tbody>tr").length;
-            var header = [];
-            var JObjectArray = [];
-            jQuery.each(jQuery(tblhead).find("tr>th"), function (i, j) {
-                header.push(jQuery(j).text())
-            })
-            jQuery.each(jQuery(tblbody).find("tr"), function (key, value) {
-                var jObject = {};
-                for (var x = 0; x < (header.length - 1); x++) {
-                    jObject[header[x]] = jQuery(this).find("td").eq(x).text()
-                }
-                JObjectArray.push(jObject)
-
-            });
-            var jsonObject = {};
-            jsonObject["count"] = tblbodyCount
-            jsonObject["value"] = JObjectArray;
-            return JObjectArray;
-        }
-        const createOrder = async () => {
-            const jsonTable = makeJsonFromTable("#w_" + widgetId + " table[aria-labelledby=\"w_" + widgetId + "_label\"]");
-            return jQuery.ajax({
-                url: gateway + "api/payments/create-order",
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json",
-                data: JSON.stringify(
-                    {
-                        integration_id,
-                        items: jsonTable
-                    }
-                ),
-                crossDomain: true
-            });
-        }
-        const check = async () => {
-
-            return jQuery.ajax({
-                url: gateway + "api/transactions/check",
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json",
-                data: JSON.stringify(
-                    {
-                        transaction_id
-                    }
-                ),
-                crossDomain: true
-            });
-        }
-
-        const payment = async (btnSubmit) => {
-            try {
-                socket = io();
-                socket.on('message', (payload) => {
-                    if (payload.transaction_id == transaction_id)
-                        if (payload.action == 'themify.58ecddba064e63f7') $(registrantForm).submit(); else {
-                            processError(payload);
-                        }
-                })
-                const res = await createOrder();
-                console.log(res.data)
-                transaction_id = res.data.metadata.transaction.id;
-                btnSubmit.find("span").html(res.data.metadata.labels.btnSubmit);
-                // $MPC.openCheckout({
-                //     url: res.data.sandbox_init_point,
-                //     mode: "modal",
-                //     onreturn: checkoutReturn
-                // });
-                window.open(res.data.init_point);
-
-            } catch (err) {
-                console.log(err);
-            }
-        }
-        const checkoutReturn = (data) => {
-            console.log(data)
-        }
-
         jQuery(function () {
-            $(registrantForm).submit(function (e) {
-                if (transaction_id) return true;
-                e.preventDefault();
-                setTimeout(function () {
-                    if (count == 0 && isFormOK()) {
-                        count++;
-                        let btnSubmit = $(registrantForm + " button[type=\"submit\"]");
-                        btnSubmit.attr("disabled", true);
-                        payment(btnSubmit)
-                    } else if (transaction_id != "") {
-                        return true
-                    }
-                }, 500)
-                return false;
-            });
-            dynamicallyLoadScript('https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js');
-            dynamicallyLoadScript('https://swoogo-integrations-be-production.up.railway.app/socket.io/socket.io.js');
+            captureForm();
         });
-
-        const processError = (payload) => {
-            console.log(payload)
-        }
     </script>
 </body>
 
