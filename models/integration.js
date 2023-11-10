@@ -35,6 +35,10 @@ const IntegrationSchema = Schema({
         type: Boolean,
         default: true
     },
+    created_at: {
+        type: Date,
+        default: new Date()
+    },
     transactions: [{ 
         type: Schema.ObjectId, 
         ref: 'Transaction' 

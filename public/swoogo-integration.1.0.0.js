@@ -3,7 +3,8 @@ const registrantForm = "#registrant-form"
 var count = 0;
 var intervalId;
 var transaction_id = "";
-
+var originalText = '';
+var btnSubmit = '';
 const processError = (payload) => {
     console.log(payload)
 }
@@ -24,7 +25,6 @@ var makeJsonFromTable = function (tableID) {
             jObject[header[x]] = jQuery(this).find("td").eq(x).text()
         }
         JObjectArray.push(jObject)
-
     });
     var jsonObject = {};
     jsonObject["count"] = tblbodyCount
@@ -49,6 +49,7 @@ const createOrder = async () => {
                 items: jsonTable
             }
         ),
+
         crossDomain: true
     });
 }
@@ -63,7 +64,8 @@ function isFormOK() {
     });
     return isOK;
 }
-const payment = async (btnSubmit) => {
+const payment = async () => {
+    originalText = btnSubmit.find("span").html();
     try {
         socket = io();
         socket.on('message', (payload) => {
@@ -73,23 +75,50 @@ const payment = async (btnSubmit) => {
                 }
         })
         const res = await createOrder();
-        console.log(res.data)
+        
+        console.log("Status",res.status)
         transaction_id = res.data.metadata.transaction.id;
+        
         btnSubmit.find("span").html(res.data.metadata.labels.btnSubmit);
-        // $MPC.openCheckout({
-        //     url: res.data.sandbox_init_point,
-        //     mode: "modal",
-        //     onreturn: checkoutReturn
-        // });
-        window.open(res.data.init_point);
+        let urlInitPoint = res.data.sandbox_init_point;
+        if (mode === "prod") {
+            urlInitPoint = res.data.init_point
+        }
+        $MPC.openCheckout({
+            url: urlInitPoint,
+            mode: "modal",
+            onreturn: checkoutReturn
+        });
+        // window.open(res.data.init_point);
 
     } catch (err) {
+        showErrorMessage("No es posible continuar con el pago, intenta nuevamente más tarde...")
+        enabledButton();
         console.log(err);
     }
 }
 const checkoutReturn = (data) => {
     console.log(data)
+    if (data.external_reference == null) {
+        enabledButton();
+        showErrorMessage('No pudimos procesar el pago, intenta nuevamente más tarde...')
+    }
 }
+const showErrorMessage = (text) =>{
+    Swal.fire({
+        icon: "error",
+        title: "Error",
+        text
+      });
+}
+
+const enabledButton = () => {
+    btnSubmit.attr("disabled", false);
+    btnSubmit.find("span").html(originalText);
+    transaction_id='';
+    count=0;
+}
+
 const check = async () => {
     return jQuery.ajax({
         url: gateway + "api/transactions/check",
@@ -111,9 +140,9 @@ const captureForm = () => {
         setTimeout(function () {
             if (count == 0 && isFormOK()) {
                 count++;
-                let btnSubmit = $(registrantForm + " button[type=\"submit\"]");
+                btnSubmit = $(registrantForm + " button[type=\"submit\"]");
                 btnSubmit.attr("disabled", true);
-                payment(btnSubmit)
+                payment()
             } else if (transaction_id != "") {
                 return true
             }
@@ -121,8 +150,13 @@ const captureForm = () => {
         return false;
     });
 }
+
+function sweet(){
+    Swal.fire("SweetAlert2 is working!");
+}
 document.addEventListener("DOMContentLoaded", function (event) {
     //do work
     dynamicallyLoadScript('https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js');
     dynamicallyLoadScript('https://swoogo-integrations-be-production.up.railway.app/socket.io/socket.io.js');
+    dynamicallyLoadScript('https://cdn.jsdelivr.net/npm/sweetalert2@11');
 });

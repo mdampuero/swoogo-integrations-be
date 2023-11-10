@@ -54,7 +54,8 @@ const usersPut = async (req, res = response) => {
     const { _id, googleLogin, password, email, ...resto } = req.body;
     resto.role = 'ADMIN_ROLE'
     if (password) {
-
+        const salt = bcryptjs.genSaltSync(10);
+        resto.password = bcryptjs.hashSync(password,salt);
     }
 
     const user = await User.findByIdAndUpdate(id, resto, { new: true });
