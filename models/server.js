@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 const morgan = require('morgan');
+const path = require('path');
 const { dbConnection } = require('../database/config');
 const { socketController } = require('../controllers/socket.controllers');
 
@@ -39,9 +40,12 @@ class Server {
             res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
             next();
         });
-
+        // console.log(path.basename())
         this.app.use(express.json())
-        this.app.use(express.static('public'))
+        this.app.use(express.static('/public'))
+        this.app.get('*', (req,res) => {
+            res.sendFile(path.join(__dirname+'/../', '/public/index.html'));
+        });
     }
 
     routes() {
