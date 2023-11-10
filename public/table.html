@@ -73,15 +73,17 @@
         </div>
         <button type="submit" class="btn btn-standard registration-check-alert" name="continue" value="continue"
             role="button"><span>Continue</span> <i class="fas fa-arrow-circle-right "></i></button>
+            <button onclick="sweet()">Test</button>
     </form>
     <!-- <script type="text/javascript" src="https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js"></script> -->
     <!-- <script type="text/javascript"
         src="https://swoogo-integrations-be-production.up.railway.app/socket.io/socket.io.js"></script> -->
-    <script type="text/javascript" src="http://dev.swoogo-integration:8080/sdk/swoogo-integration.1.0.0.js"></script>
+    <script type="text/javascript" src="http://dev.swoogo-integration:8080/swoogo-integration.1.0.0.js"></script>
     <script>
         const widgetId = "38609517";
-        const integration_id = "653ea75c98ef615ed8aeac6b";
+        const integration_id = "654970df72c56d6fafca7652";
         const gateway = "http://localhost:8080/";
+        const mode = "sandbox"
         jQuery(function () {
             captureForm();
         });

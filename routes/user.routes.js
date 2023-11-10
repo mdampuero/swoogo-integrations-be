@@ -8,22 +8,23 @@ const { isRoleValid, isEmailExist, isUserExist } = require('../helpers/user-vali
 const router = Router();
 
 router.get('/', [
-    // validatJWT,
+    validatJWT,
     // validateAdminRole
 ], usersGet);
 
 router.get('/:id', [
-    // validatJWT,
+    validatJWT,
     check('id', 'The id is not valid').isMongoId(),
     check('id').custom(isUserExist),
     validateFields
 ], usersGetOne);
 
 router.get('/stats/get', [
+    validatJWT,
 ], usersStats);
 
 router.put('/:id', [
-    // validatJWT,
+    validatJWT,
     // validateAdminRole,
     check('id', 'The id is not valid').isMongoId(),
     check('id').custom(isUserExist),
@@ -31,7 +32,7 @@ router.put('/:id', [
 ], usersPut);
 
 router.post('/', [
-    // validatJWT,
+    validatJWT,
     // existRole('ADMIN_ROLE', 'USER_ROLE'),
     check('name', 'The name is required').not().isEmpty(),
     check('email', 'The email is invalid').isEmail(),
@@ -42,7 +43,7 @@ router.post('/', [
 ], usersPost);
 
 router.delete('/:id', [
-    // validatJWT,
+    validatJWT,
     // validateAdminRole,
     // existRole('ADMIN_ROLE', 'USER_ROLE'),
     check('id', 'The id is not valid').isMongoId(),

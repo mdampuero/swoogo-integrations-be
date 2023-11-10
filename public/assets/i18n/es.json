@@ -2,5 +2,9 @@
     "MERCADOPAGO": "Mercado Pago",
     "credit_card": "Tarjeta de crédito",
     "USERS": "Usuarios",
-    "The name is required": "El nombre es requerido"
+    "The name is required": "El nombre es requerido",
+    "User or password is not valid":"Email o contraseña incorrectos",
+    "The password is required": "La contraseña es requerida",
+    "The email is invalid": "El email es inválido",
+    "The email is required": "El email es requerido"
 }
