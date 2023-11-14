@@ -2,8 +2,8 @@ const express = require('express')
 const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
-const { dbConnection } = require('../database/config');
-const { socketController } = require('../controllers/socket.controllers');
+const { dbConnection } = require('./database/config');
+const { socketController } = require('./controllers/socket.controllers');
 
 class Server {
 
@@ -42,23 +42,28 @@ class Server {
         });
         // console.log(path.basename())
         this.app.use(express.json())
-        this.app.use(express.static('/public'))
-        this.app.get('*', (req,res) => {
-            res.sendFile(path.join(__dirname+'/../', '/public/index.html'));
+        this.app.use(express.static(path.join(__dirname, 'public')));
+
+        // this.app.use(express.static('/public'))
+        // this.app.get('*', (req,res) => {
+        //     res.sendFile(path.join(__dirname+'/../', '/public/index.html'));
+        // });
+        this.app.get('*', (req, res) => {
+            res.sendFile(path.join(__dirname, 'public/index.html'));
         });
     }
 
     routes() {
-        this.app.use('/api/auth',require('../routes/auth.routes'));
-        this.app.use('/api/payments', require('../routes/payment.routes'));
-        this.app.use('/api/users', require('../routes/user.routes'));
-        this.app.use('/api/demos', require('../routes/demo.routes'));
-        this.app.use('/api/events', require('../routes/events.routes'));
-        this.app.use('/api/registrants', require('../routes/registrant.routes'));
-        this.app.use('/api/integrations', require('../routes/integration.routes'));
-        this.app.use('/api/transactions', require('../routes/transaction.routes'));
-        this.app.use('/api/webhooks', require('../routes/webhook.routes'));
-        this.app.use('/api/mocks', require('../routes/mock.routes'));
+        this.app.use('/api/auth',require('./routes/auth.routes'));
+        this.app.use('/api/payments', require('./routes/payment.routes'));
+        this.app.use('/api/users', require('./routes/user.routes'));
+        this.app.use('/api/demos', require('./routes/demo.routes'));
+        this.app.use('/api/events', require('./routes/events.routes'));
+        this.app.use('/api/registrants', require('./routes/registrant.routes'));
+        this.app.use('/api/integrations', require('./routes/integration.routes'));
+        this.app.use('/api/transactions', require('./routes/transaction.routes'));
+        this.app.use('/api/webhooks', require('./routes/webhook.routes'));
+        this.app.use('/api/mocks', require('./routes/mock.routes'));
     }
 
     sockets(){
