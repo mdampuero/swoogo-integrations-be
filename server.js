@@ -42,15 +42,7 @@ class Server {
         });
         // console.log(path.basename())
         this.app.use(express.json())
-        this.app.use(express.static(path.join(__dirname, 'public')));
-
-        // this.app.use(express.static('/public'))
-        // this.app.get('*', (req,res) => {
-        //     res.sendFile(path.join(__dirname+'/../', '/public/index.html'));
-        // });
-        this.app.get('*', (req, res) => {
-            res.sendFile(path.join(__dirname, 'public/index.html'));
-        });
+        
     }
 
     routes() {
@@ -64,6 +56,16 @@ class Server {
         this.app.use('/api/transactions', require('./routes/transaction.routes'));
         this.app.use('/api/webhooks', require('./routes/webhook.routes'));
         this.app.use('/api/mocks', require('./routes/mock.routes'));
+        this.app.use(express.static(path.join(__dirname, 'public')));
+
+        // this.app.use(express.static('/public'))
+        // this.app.get('*', (req,res) => {
+        //     res.sendFile(path.join(__dirname+'/../', '/public/index.html'));
+        // });
+        this.app.get('*', (req, res) => {
+            
+            res.sendFile(path.join(__dirname, 'public/index.html'));
+        });
     }
 
     sockets(){
