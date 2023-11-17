@@ -6128,3 +6128,11 @@ File: scss
   .card-outline-primary .card-header {
     background: #745af2;
     border-color: #745af2; }
+
+.cursor-pointer{
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  font-weight: bold;
+}

@@ -64,6 +64,7 @@ const createOrder = async (req = request, res = response) => {
             integration
         })
     } catch (error) {
+        console.log(error)
         res.status((typeof error.status != "undefined") ? error.status : 500).json({
             "result": false,
             "data": error
