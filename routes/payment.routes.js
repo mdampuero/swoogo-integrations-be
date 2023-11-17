@@ -17,7 +17,7 @@ router.post('/create-order', [
     // check('item_currency', "The field 'item_currency' is required").not().isEmpty(),
     // check('registrant_id', "The field 'registrant_id' is required").not().isEmpty(),
     // existRegistrant,
-    validatJWT,
+    // validatJWT,
     check('integration_id', "The field 'integration_id' is required").not().isEmpty(),
     existIntegration,
     validateFields
