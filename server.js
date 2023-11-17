@@ -31,27 +31,21 @@ class Server {
 
     middlewares() {
         this.app.use(morgan('dev'))
+        this.app.use(cors())
         this.app.use((req, res, next) => {
+            req.io = this.io
             res.header('Access-Control-Allow-Origin', 'https://clickgroup.swoogo.com');
             res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
             res.header('Access-Control-Allow-Headers', 'Content-Type');
             next();
         });
-        this.app.use((req, res, next) => {
-            req.io = this.io
-            res.header('Access-Control-Allow-Origin', '*');
-            res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
-            res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-            res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
-            next();
-        });
         // console.log(path.basename())
         this.app.use(express.json())
-
+        
     }
 
     routes() {
-        this.app.use('/api/auth', require('./routes/auth.routes'));
+        this.app.use('/api/auth',require('./routes/auth.routes'));
         this.app.use('/api/payments', require('./routes/payment.routes'));
         this.app.use('/api/users', require('./routes/user.routes'));
         this.app.use('/api/demos', require('./routes/demo.routes'));
@@ -68,12 +62,12 @@ class Server {
         //     res.sendFile(path.join(__dirname+'/../', '/public/index.html'));
         // });
         this.app.get('*', (req, res) => {
-
+            
             res.sendFile(path.join(__dirname, 'public/index.html'));
         });
     }
 
-    sockets() {
+    sockets(){
         this.io.on('connection', socketController)
     }
 
@@ -83,5 +77,5 @@ class Server {
         })
     }
 }
-module.exports.io =
-    module.exports = Server;
+module.exports.io = 
+module.exports = Server;
