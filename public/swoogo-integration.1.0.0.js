@@ -1,5 +1,6 @@
 var socket;
-const registrantForm = "#registrant-form"
+const registrantForm = "#registrant-form";
+const socketServer = 'https://swoogo-integrations-be-production.up.railway.app';
 var count = 0;
 var intervalId;
 var transaction_id = "";
@@ -67,7 +68,7 @@ function isFormOK() {
 const payment = async () => {
     originalText = btnSubmit.find("span").html();
     try {
-        socket = io();
+        socket = io(socketServer);
         socket.on('message', (payload) => {
             if (payload.transaction_id == transaction_id)
                 if (payload.action == 'themify.58ecddba064e63f7') $(registrantForm).submit(); else {
@@ -75,10 +76,10 @@ const payment = async () => {
                 }
         })
         const res = await createOrder();
-        
-        console.log("Status",res.status)
+
+        console.log("Status", res.status)
         transaction_id = res.data.metadata.transaction.id;
-        
+
         btnSubmit.find("span").html(res.data.metadata.labels.btnSubmit);
         let urlInitPoint = res.data.sandbox_init_point;
         if (mode === "prod") {
@@ -104,19 +105,19 @@ const checkoutReturn = (data) => {
         showErrorMessage('No pudimos procesar el pago, intenta nuevamente más tarde...')
     }
 }
-const showErrorMessage = (text) =>{
+const showErrorMessage = (text) => {
     Swal.fire({
         icon: "error",
         title: "Error",
         text
-      });
+    });
 }
 
 const enabledButton = () => {
     btnSubmit.attr("disabled", false);
     btnSubmit.find("span").html(originalText);
-    transaction_id='';
-    count=0;
+    transaction_id = '';
+    count = 0;
 }
 
 const check = async () => {
@@ -151,7 +152,7 @@ const captureForm = () => {
     });
 }
 
-function sweet(){
+function sweet() {
     Swal.fire("SweetAlert2 is working!");
 }
 document.addEventListener("DOMContentLoaded", function (event) {
