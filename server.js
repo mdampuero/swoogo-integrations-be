@@ -36,14 +36,6 @@ class Server {
     middlewares() {
         this.app.use(morgan('dev'))
         this.app.use(cors())
-        this.app.use((req, res, next) => {
-            req.io = this.io
-            res.header('Access-Control-Allow-Origin', 'https://clickgroup.swoogo.com');
-            res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-            res.header('Access-Control-Allow-Headers', 'Content-Type');
-            next();
-        });
-        // console.log(path.basename())
         this.app.use(express.json())
         
     }
