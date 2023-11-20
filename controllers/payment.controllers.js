@@ -98,7 +98,7 @@ const backPending = (req = request, res = response) => {
 
 const webhook = async (req = request, res = response) => {
     const payment = req.query;
-    console.log(payment);
+    console.log(payment)
     let integration = await Integration.findById(payment.integration_id);
     try {
         let data;
@@ -119,10 +119,13 @@ const webhook = async (req = request, res = response) => {
                     transaction.save()
                 ]);
             }
-            req.io.emit("message", {
-                "transaction_id": transaction.id,
-                "action": "themify.58ecddba064e63f7"
-            });
+            if(body.status === "approved"){
+                req.io.emit("message", {
+                    "transaction_id": transaction.id,
+                    "status": data.body.status,
+                    "action": "themify.58ecddba064e63f7"
+                });
+            }
 
             res.json({
                 "result": true,
