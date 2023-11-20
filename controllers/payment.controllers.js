@@ -98,8 +98,8 @@ const backPending = (req = request, res = response) => {
 
 const webhook = async (req = request, res = response) => {
     const payment = req.query;
+    console.log(payment);
     let integration = await Integration.findById(payment.integration_id);
-
     try {
         let data;
         if (integration && payment.topic === "payment" && typeof payment.id != "undefined" && payment.id) {
@@ -129,10 +129,12 @@ const webhook = async (req = request, res = response) => {
                 "data": data
             })
         }
-        res.status(200);
-
+        res.status(404).json({
+            "result": false,
+            "data": null
+        });
     } catch (error) {
-        console.log(error);
+        console.log(error)
         res.status((typeof error.status != "undefined") ? error.status : 500).json({
             "result": false,
             "data": error
