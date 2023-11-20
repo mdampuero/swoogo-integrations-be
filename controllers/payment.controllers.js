@@ -48,9 +48,11 @@ const createOrder = async (req = request, res = response) => {
         });
         const result = await mercadopago.preferences.create({
             items: items_order,
-            metadata: { transaction, labels: {
-                btnSubmit: 'Waiting for payment'
-            } },
+            metadata: {
+                transaction, labels: {
+                    btnSubmit: 'Waiting for payment'
+                }
+            },
             back_urls: {
                 success: process.env.DOMAIN + "/api/payments/success",
                 pending: process.env.DOMAIN + "/api/payments/pending",
@@ -118,7 +120,7 @@ const webhook = async (req = request, res = response) => {
                 ]);
             }
             req.io.emit("message", {
-                "transaction_id":transaction.id,
+                "transaction_id": transaction.id,
                 "action": "themify.58ecddba064e63f7"
             });
 
