@@ -4,7 +4,6 @@ const { validatJWT } = require('../middlewares/validate-jwt');
 const router = Router();
 
 router.post('/', [
-    validatJWT,
 ], mockPost);
 
 module.exports = router

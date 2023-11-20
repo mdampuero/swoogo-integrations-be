@@ -9,7 +9,7 @@ const socketController = (socket) => {
     socket.on('mensaje', (payload, callback) => {
         console.log(payload);
         callback({
-            'msg': 'respuesta a esa peition'
+            'msg': 'respuesta a esa peticion'
         })
         // this.io.emit('devolver-mensaje',payload);
      })
