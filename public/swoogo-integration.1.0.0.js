@@ -1,6 +1,5 @@
 var socket;
-const registrantForm = "#registrant-form";
-const socketServer = 'https://swoogo-integrations-be-production.up.railway.app';
+
 var count = 0;
 var intervalId;
 var transaction_id = "";
@@ -68,8 +67,9 @@ function isFormOK() {
 const payment = async () => {
     originalText = btnSubmit.find("span").html();
     try {
-        socket = io(socketServer);
+        socket = io(gateway);
         socket.on('message', (payload) => {
+            console.log(payload)
             if (payload.transaction_id == transaction_id)
                 if (payload.action == 'themify.58ecddba064e63f7') $(registrantForm).submit(); else {
                     processError(payload);
