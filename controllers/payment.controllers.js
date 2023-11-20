@@ -119,7 +119,7 @@ const webhook = async (req = request, res = response) => {
                     transaction.save()
                 ]);
             }
-            if(body.status === "approved"){
+            if(data.body.status === "approved"){
                 req.io.emit("message", {
                     "transaction_id": transaction.id,
                     "status": data.body.status,
