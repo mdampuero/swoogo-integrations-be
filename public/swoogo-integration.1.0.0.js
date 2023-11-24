@@ -37,7 +37,7 @@ function dynamicallyLoadScript(url) {
     document.head.appendChild(script);
 }
 const createOrder = async () => {
-    const jsonTable = makeJsonFromTable("#w_" + widgetId + " table[aria-labelledby=\"w_" + widgetId + "_label\"]");
+    const jsonTable = makeJsonFromTable(".swoogo-reg-summary table");
     return jQuery.ajax({
         url: gateway + "api/payments/create-order",
         type: "POST",
