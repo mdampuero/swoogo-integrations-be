@@ -77,7 +77,7 @@ const payment = async () => {
         })
         const res = await createOrder();
 
-        console.log("Status", res.status)
+        console.log("Status", res)
         transaction_id = res.data.metadata.transaction.id;
 
         btnSubmit.find("span").html(res.data.metadata.labels.btnSubmit);
@@ -85,6 +85,22 @@ const payment = async () => {
         if (mode === "prod") {
             urlInitPoint = res.data.init_point
         }
+        //mp.open
+        // mp.checkout({
+        //     preference: {
+        //       id: res.data.id,
+        //     },
+        //   });
+        // mp.bricks().create("wallet", "wallet_container", {
+        //     initialization: {
+        //         preferenceId: res.data.id,
+        //         redirectMode: "modal"
+        //     },
+        //     callbacks: {
+        //         onError: (error) => console.error(error),
+        //         onReady: (data) => { console.log(data) }
+        //       }
+        // });
         $MPC.openCheckout({
             url: urlInitPoint,
             mode: "modal",
@@ -99,7 +115,6 @@ const payment = async () => {
     }
 }
 const checkoutReturn = (data) => {
-    console.log(data)
     if (data.external_reference == null) {
         enabledButton();
         showErrorMessage('No pudimos procesar el pago, intenta nuevamente más tarde...')
