@@ -13,10 +13,13 @@ const webhookPost = async (req = request, res = response) => {
             registrant.swoogo_id = body.registrant.id
             registrant.swoogo_data = body.registrant
             registrant.save();
+            res.json({
+                "result": "OK"
+            })
         }
     }
-    res.json({
-        "result": "OK"
+    return res.status(404).json({
+        "result": "Not found registrant"
     })
 }
 module.exports = {
