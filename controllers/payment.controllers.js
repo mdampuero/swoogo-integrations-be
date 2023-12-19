@@ -53,11 +53,6 @@ const createOrder = async (req = request, res = response) => {
                     btnSubmit: 'Waiting for payment'
                 }
             },
-            back_urls: {
-                success: process.env.DOMAIN + "/api/payments/success",
-                pending: process.env.DOMAIN + "/api/payments/pending",
-                failure: process.env.DOMAIN + "/api/payments/failure"
-            },
             notification_url: `${process.env.DOMAIN}/api/payments/webhook?integration_id=${integration.id}`
         });
 
