@@ -1,12 +1,12 @@
 const { Router } = require('express');
-const { eventGet } = require('../controllers/events.controllers');
+const { eventSwoogoGet } = require('../controllers/eventSwoogos.controllers');
 const { validatJWT } = require('../middlewares/validate-jwt');
 
 const router = Router();
 
 router.get('/', [
     validatJWT,
-], eventGet);
+], eventSwoogoGet);
 
 
 module.exports = router

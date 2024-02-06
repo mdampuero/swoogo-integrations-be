@@ -9,10 +9,10 @@ const IntegrationSchema = Schema({
         type: Schema.Types.Mixed,
         ref: 'Event'
     },
-    access_token: {
+    event_id: {
         type: String
     },
-    event_id: {
+    access_token: {
         type: String
     },
     item_title: {
