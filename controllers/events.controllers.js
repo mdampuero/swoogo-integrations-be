@@ -1,30 +1,90 @@
 const { response, request } = require("express");
-const axios = require('axios');
-const { authentication } = require("../helpers/swoogo-auth");
+const Event = require("../models/event");
+const { eventQuery } = require('../helpers/event');
+const { calcPage } = require('../helpers/utils');
 
-const eventGet = async (req = request, res = response) => {
+const eventsGet = async (req = request, res = response) => {
+    const { limit, sort, direction, offset, query } = eventQuery(req);
+    const [total, result] = await Promise.all([
+        Event.countDocuments(query),
+        Event.find(query)
+            .sort([[sort, direction]])
+            .limit(limit)
+            .skip(offset)
+            .populate('category')
+    ])
+    res.json({
+        total,
+        pages: calcPage(total, limit),
+        limit,
+        data: result
+    })
+}
 
-    try {
-        const instance = axios.create({
-            baseURL: `${process.env.SWOOGO_APIURL}events.json`,
-            headers: { "Authorization": "Bearer "+ await authentication() }
-        });
-        const resp = await instance.get();
-        const { items, _meta } = resp.data;
-        res.json({
-            total: _meta.totalCount,
-            pages: _meta.pageCount,
-            limit: _meta.perPage,
-            data: items
-        });
-    } catch (error) {
-        res.status((typeof error.status != "undefined") ? error.status : 500).json({
-            "result": false,
-            "data": error
-        })
-    }
+const sliderHome = async (req = request, res = response) => {
+    const { limit, sort, direction, offset, query } = eventQuery(req);
+    const [result] = await Promise.all([
+        Event.find({isDelete: false,isActive: true, inHome:true})
+            .limit(10)
+            .populate('category')
+    ])
+    res.json({
+        data: result
+    })
+}
+
+const last = async (req = request, res = response) => {
+    const { limit, sort, direction, offset, query } = eventQuery(req);
+    const [result] = await Promise.all([
+        Event.find({isDelete: false,isActive: true })
+            .sort({ created_at: -1 })
+            .limit(10)
+            .populate('category')
+    ])
+    res.json({
+        data: result
+    })
+}
+
+const eventsGetOne = async (req, res = response) => {
+    const { id } = req.params;
+    const event = await Event.findById(id).populate('category');
+    res.json({
+        event
+    })
+}
+
+const eventsPost = async (req, res = response) => {
+    const { id, ...body } = req.body;
+    const event = new Event(body);
+    await event.save();
+    res.json({
+        event
+    })
+}
+
+const eventsPut = async (req, res = response) => {
+    const { id } = req.params;
+    const event = await Event.findByIdAndUpdate(id, req.body, { new: true });
+    res.json({
+        event
+    })
+}
+
+const eventsDelete = async (req, res = response) => {
+    const { id } = req.params;
+    const event = await Event.findByIdAndUpdate(id, { isDelete: true }, { new: true });
+    res.json({
+        event
+    })
 }
 
 module.exports = {
-    eventGet
+    eventsGet,
+    eventsPost,
+    eventsPut,
+    eventsDelete,
+    eventsGetOne,
+    sliderHome,
+    last
 }

@@ -49,13 +49,14 @@ class Server {
         this.app.use('/api/payments', require('./routes/payment.routes'));
         this.app.use('/api/users', require('./routes/user.routes'));
         this.app.use('/api/demos', require('./routes/demo.routes'));
-        this.app.use('/api/events', require('./routes/events.routes'));
+        this.app.use('/api/events', require('./routes/event.routes'));
+        this.app.use('/api/eventSwoogos', require('./routes/eventSwoogos.routes'));
         this.app.use('/api/registrants', require('./routes/registrant.routes'));
         this.app.use('/api/integrations', require('./routes/integration.routes'));
         this.app.use('/api/transactions', require('./routes/transaction.routes'));
         this.app.use('/api/webhooks', require('./routes/webhook.routes'));
         this.app.use('/api/mocks', require('./routes/mock.routes'));
-        
+        this.app.use('/api/categories', require('./routes/category.routes'));
         this.app.use(express.static(path.join(__dirname, 'public')));
         this.app.get('*', (req, res) => {
             res.sendFile(path.join(__dirname, 'public/index.html'));

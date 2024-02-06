@@ -1,86 +1,71 @@
 const { response, request } = require("express");
-const { Category } = require("../models");
+const Category = require("../models/category");
+const { categoryQuery } = require('../helpers/category');
+const { calcPage } = require('../helpers/utils');
 
 const categoriesGet = async (req = request, res = response) => {
-    const { page = '1', offset = '0', limit = '50' } = req.query;
-    const query = { isDelete: false }
-
+    const { limit, sort, direction, offset, query } = categoryQuery(req);
     const [total, result] = await Promise.all([
         Category.countDocuments(query),
         Category.find(query)
-            .populate("user",'name')
-            .limit(Number(limit))
-            .skip(Number(offset))
+            .sort([[sort, direction]])
+            .limit(limit)
+            .skip(offset)
     ])
     res.json({
         total,
-        result
+        pages: calcPage(total, limit),
+        limit,
+        data: result
     })
 }
 
 const categoriesGetOne = async (req, res = response) => {
-    try {
-        const { id } = req.params;
-        const category = await Category.findById(id);
-        if (!category)
-            throw 'The id is not valid';
-        res.json({
-            category
-        });
-    } catch (e) {
-        return res.status(400).json({
-            response: e
-        })
-    }
+    const { id } = req.params;
+    const category = await Category.findById(id);
+    res.json({
+        category
+    })
 }
 
 const categoriesPost = async (req, res = response) => {
-    try {
-        const { name } = req.body;
-        const categoryDB = await Category.findOne({ name, isDelete: false });
-        if (categoryDB)
-            throw 'The category already exist';
-        const category = new Category({ name, user: req.user._id });
-        await category.save();
-        res.status(201).json({
-            category
-        })
-    } catch (e) {
-        return res.status(400).json({
-            response: e
-        })
-    }
+    const { id, ...body } = req.body;
+    const category = new Category(body);
+    await category.save();
+    res.json({
+        category
+    })
 }
 
 const categoriesPut = async (req, res = response) => {
-    try {
-        const { id } = req.params;
-        const { _id, ...resto } = req.body;
-        const category = await Category.findByIdAndUpdate(id, resto, { new: true });
-        res.json({
-            category
-        })
-    } catch (e) {
-        return res.status(400).json({
-            response: e
-        })
-    }
-   
+    const { id } = req.params;
+    const category = await Category.findByIdAndUpdate(id, req.body, { new: true });
+    res.json({
+        category
+    })
 }
 
 const categoriesDelete = async (req, res = response) => {
-    // const { id } = req.params;
-    // const user = await User.findByIdAndUpdate(id, { isDelete: true }, { new: true });
-    // res.json({
-    //     user
-    // })
-    res.json("ok")
+    const { id } = req.params;
+    const category = await Category.findByIdAndUpdate(id, { isDelete: true }, { new: true });
+    res.json({
+        category
+    })
 }
-
+const home = async (req = request, res = response) => {
+    const [result] = await Promise.all([
+        Category.find({isDelete: false, inHome:true})
+            .limit(10)
+    ])
+    res.json({
+        data: result
+    })
+}
 module.exports = {
     categoriesGet,
     categoriesPost,
     categoriesPut,
     categoriesDelete,
-    categoriesGetOne
+    categoriesGetOne,
+    home
 }
