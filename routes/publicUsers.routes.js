@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getAll, post, put } = require('../controllers/publicUsers.controllers');
+const { getAll, post, put, getOne } = require('../controllers/publicUsers.controllers');
 const { validateAccessToken } = require('../middlewares/validate-accessToken');
 
 const router = Router();
@@ -15,6 +15,10 @@ router.post('/', [
 router.put('/:registrantId', [
     validateAccessToken
 ], put);
+
+router.get('/:registrantId', [
+    validateAccessToken
+], getOne);
 
 // router.delete('/:registrantId', [
 //     validateAccessToken
