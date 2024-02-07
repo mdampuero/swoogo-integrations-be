@@ -6136,3 +6136,7 @@ File: scss
 .cursor-pointer:hover {
   font-weight: bold;
 }
+
+.mt-2{
+  margin-top: 2rem !important;
+}
