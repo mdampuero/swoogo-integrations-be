@@ -12,7 +12,8 @@ const calcPage = (total, limit) => {
 
 const integrationTypes = () => {
     return [
-        'MERCADOPAGO'
+        'MERCADOPAGO',
+        'WEBSERVICE'
     ]
 }
 
