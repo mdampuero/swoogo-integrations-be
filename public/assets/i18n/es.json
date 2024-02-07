@@ -6,5 +6,6 @@
     "User or password is not valid":"Email o contraseña incorrectos",
     "The password is required": "La contraseña es requerida",
     "The email is invalid": "El email es inválido",
-    "The email is required": "El email es requerido"
+    "The email is required": "El email es requerido",
+    "WEBSERVICE": "Web Service"
 }
