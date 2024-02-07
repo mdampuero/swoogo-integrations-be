@@ -26,6 +26,7 @@ const post = async (req, res = response) => {
     const formData = convertJson2Form(body);
     formData.append('event_id', req.integration.event_id);
     try {
+        console.log(formData)
         const resp = await axios.post(`${process.env.SWOOGO_APIURL}registrants/create.json`, formData, {
             headers: { "Authorization": "Bearer " + await authentication() }
         });
@@ -37,7 +38,7 @@ const post = async (req, res = response) => {
         })
     } catch (error) {
         if (error.response) {
-            const { errorMessage, statusCode } = parseErrorSwoogo();
+            const { errorMessage, statusCode } = parseErrorSwoogo(error);
             res.status(statusCode).json({
                 "msg": errorMessage
             });
@@ -65,9 +66,37 @@ const put = async (req, res = response) => {
             }
         })
     } catch (error) {
-        console.log(error)
         if (error.response) {
-            const { errorMessage, statusCode } = parseErrorSwoogo();
+            const { errorMessage, statusCode } = parseErrorSwoogo(error);
+            res.status(statusCode).json({
+                "msg": errorMessage
+            });
+        } else {
+            res.status(500).json({
+                "msg": "Error interno del servidor."
+            });
+        }
+    }
+}
+
+const remove = async (req, res = response) => {
+    const { registrantId } = req.params;
+    const body = req.body;
+    const formData = convertJson2Form(body);
+    formData.append('event_id', req.integration.event_id);
+    try {
+        const resp = await axios.delete(`${process.env.SWOOGO_APIURL}registrants/update/${registrantId}.json`, formData, {
+            headers: { "Authorization": "Bearer " + await authentication() }
+        });
+        const { first_name, last_name, email, id, mobile_phone } = resp.data
+        res.json({
+            data: {
+                id, first_name, last_name, email, mobile_phone
+            }
+        })
+    } catch (error) {
+        if (error.response) {
+            const { errorMessage, statusCode } = parseErrorSwoogo(error);
             res.status(statusCode).json({
                 "msg": errorMessage
             });
@@ -98,7 +127,7 @@ const parseErrorSwoogo = (error) => {
     let errorMessage = error.response.data.message;
     const statusCode = error.response.status;
     if (statusCode == 422) {
-        errorMessage = "The specify email already exists."
+        errorMessage = error.response.data[0].message
     }
     return { errorMessage, statusCode }
 }

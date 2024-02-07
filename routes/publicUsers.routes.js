@@ -16,4 +16,8 @@ router.put('/:registrantId', [
     validateAccessToken
 ], put);
 
+// router.delete('/:registrantId', [
+//     validateAccessToken
+// ], put);
+
 module.exports = router
