@@ -8,7 +8,13 @@ const getAll = async (req = request, res = response) => {
     const integration = req.integration;
     const instance = axios.create({
         baseURL: `${process.env.SWOOGO_APIURL}registrants.json`,
-        params: { fields: "id, first_name, last_name , email, mobile_phone", 'per-page': perPage, page, event_id: integration.event_id },
+        params: { 
+            fields: "id,first_name,last_name,email,mobile_phone,job_title,company,registration_status", 
+            'per-page': perPage, 
+            page, 
+            event_id: integration.event_id,
+            search: "registration_status=confirmed"
+        },
         headers: { "Authorization": "Bearer " + await authentication() }
     });
     const resp = await instance.get();
@@ -29,10 +35,10 @@ const post = async (req, res = response) => {
         const resp = await axios.post(`${process.env.SWOOGO_APIURL}registrants/create.json`, formData, {
             headers: { "Authorization": "Bearer " + await authentication() }
         });
-        const { first_name, last_name, email, id, mobile_phone } = resp.data
+        const { first_name, last_name, email, id, mobile_phone, job_title, company, registration_status } = resp.data
         res.json({
             data: {
-                id, first_name, last_name, email, mobile_phone
+                id, first_name, last_name, email, mobile_phone, job_title, company, registration_status
             }
         })
     } catch (error) {
@@ -58,10 +64,10 @@ const getOne = async (req, res = response) => {
         const resp = await axios.get(`${process.env.SWOOGO_APIURL}registrants/${registrantId}.json`, {
             headers: { "Authorization": "Bearer " + await authentication() }
         });
-        const { first_name, last_name, email, id, mobile_phone } = resp.data
+        const { first_name, last_name, email, id, mobile_phone, job_title, company, registration_status } = resp.data
         res.json({
             data: {
-                id, first_name, last_name, email, mobile_phone
+                id, first_name, last_name, email, mobile_phone, job_title, company, registration_status
             }
         })
     } catch (error) {
@@ -87,10 +93,10 @@ const put = async (req, res = response) => {
         const resp = await axios.put(`${process.env.SWOOGO_APIURL}registrants/update/${registrantId}.json`, formData, {
             headers: { "Authorization": "Bearer " + await authentication() }
         });
-        const { first_name, last_name, email, id, mobile_phone } = resp.data
+        const { first_name, last_name, email, id, mobile_phone, job_title, company, registration_status } = resp.data
         res.json({
             data: {
-                id, first_name, last_name, email, mobile_phone
+                id, first_name, last_name, email, mobile_phone, job_title, company, registration_status
             }
         })
     } catch (error) {
@@ -109,20 +115,20 @@ const put = async (req, res = response) => {
 
 const remove = async (req, res = response) => {
     const { registrantId } = req.params;
-    const body = req.body;
-    const formData = convertJson2Form(body);
-    formData.append('event_id', req.integration.event_id);
+    const formData = new FormData();
+    formData.append('registration_status', 'cancelled');
     try {
-        const resp = await axios.delete(`${process.env.SWOOGO_APIURL}registrants/update/${registrantId}.json`, formData, {
+        const resp = await axios.put(`${process.env.SWOOGO_APIURL}registrants/update/${registrantId}.json`, formData, {
             headers: { "Authorization": "Bearer " + await authentication() }
         });
-        const { first_name, last_name, email, id, mobile_phone } = resp.data
+        const { first_name, last_name, email, id, mobile_phone, job_title, company, registration_status } = resp.data
         res.json({
             data: {
-                id, first_name, last_name, email, mobile_phone
+                id, first_name, last_name, email, mobile_phone, job_title, company, registration_status
             }
         })
     } catch (error) {
+        console.log(error);
         if (error.response) {
             const { errorMessage, statusCode } = parseErrorSwoogo(error);
             res.status(statusCode).json({
@@ -164,5 +170,6 @@ module.exports = {
     getAll,
     post,
     put,
-    getOne
+    getOne,
+    remove
 }
