@@ -9,7 +9,7 @@ const mapper = {
     "last_name"          : "last_name",
     "email"              : "email",
     "mobile_phone"       : "mobile_phone",
-    "job"                : "job_title",
+    "job_title"          : "job_title",
     "company"            : "company",
     "registration_status": "registration_status",
     "external_id"        : "c_3803254",
