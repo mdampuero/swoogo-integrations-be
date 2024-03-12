@@ -6140,3 +6140,6 @@ File: scss
 .mt-2{
   margin-top: 2rem !important;
 }
+.max-w-100{
+  max-width: 100%;
+}
