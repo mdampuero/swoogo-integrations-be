@@ -5,7 +5,7 @@ const { calcPage } = require('../helpers/utils');
 
 const demosGet = async (req = request, res = response) => {
     const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    const host = process.env.NODE_ENV === 'production' ? process.env.HOST : 'localhost';
+    const host = process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'localhost';
     const port = process.env.NODE_ENV === 'production' ? '' : ':' + process.env.PORT;
 
     res.json({
