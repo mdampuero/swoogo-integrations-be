@@ -26,4 +26,5 @@ yarn-error.log
 !.vscode/exte
 
 .DS_Store
+.envsendgrid.env
 .env

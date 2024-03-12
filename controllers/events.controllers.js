@@ -1,7 +1,8 @@
 const { response, request } = require("express");
 const Event = require("../models/event");
 const { eventQuery } = require('../helpers/event');
-const { calcPage } = require('../helpers/utils');
+const { calcPage, base64ToFile } = require('../helpers/utils');
+
 
 const eventsGet = async (req = request, res = response) => {
     const { limit, sort, direction, offset, query } = eventQuery(req);
@@ -24,7 +25,7 @@ const eventsGet = async (req = request, res = response) => {
 const sliderHome = async (req = request, res = response) => {
     const { limit, sort, direction, offset, query } = eventQuery(req);
     const [result] = await Promise.all([
-        Event.find({isDelete: false,isActive: true, inHome:true})
+        Event.find({ isDelete: false, isActive: true, inHome: true })
             .limit(10)
             .populate('category')
     ])
@@ -36,9 +37,21 @@ const sliderHome = async (req = request, res = response) => {
 const last = async (req = request, res = response) => {
     const { limit, sort, direction, offset, query } = eventQuery(req);
     const [result] = await Promise.all([
-        Event.find({isDelete: false,isActive: true })
+        Event.find({ isDelete: false, isActive: true })
             .sort({ created_at: -1 })
             .limit(10)
+            .populate('category')
+    ])
+    res.json({
+        data: result
+    })
+}
+
+const similar = async (req = request, res = response) => {
+    const { id } = req.params;
+    const [result] = await Promise.all([
+        Event.find({ isDelete: false, isActive: true , _id: { $ne: id }})
+            .sort({ created_at: -1 })
             .populate('category')
     ])
     res.json({
@@ -56,6 +69,10 @@ const eventsGetOne = async (req, res = response) => {
 
 const eventsPost = async (req, res = response) => {
     const { id, ...body } = req.body;
+    if(body.pictureBackgroundBase64)
+        body.pictureBackground = await base64ToFile(req.body.pictureBackgroundBase64);
+    if(body.pictureCardBase64)
+        body.pictureCard = await base64ToFile(req.body.pictureCardBase64);
     const event = new Event(body);
     await event.save();
     res.json({
@@ -65,7 +82,12 @@ const eventsPost = async (req, res = response) => {
 
 const eventsPut = async (req, res = response) => {
     const { id } = req.params;
-    const event = await Event.findByIdAndUpdate(id, req.body, { new: true });
+    const body  = req.body;
+    if(body.pictureBackgroundBase64)
+        body.pictureBackground = await base64ToFile(body.pictureBackgroundBase64);
+    if(body.pictureCardBase64)
+        body.pictureCard = await base64ToFile(body.pictureCardBase64);
+    const event = await Event.findByIdAndUpdate(id, body, { new: true });
     res.json({
         event
     })
@@ -80,6 +102,7 @@ const eventsDelete = async (req, res = response) => {
 }
 
 module.exports = {
+    similar,
     eventsGet,
     eventsPost,
     eventsPut,

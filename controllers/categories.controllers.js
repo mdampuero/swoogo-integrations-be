@@ -1,5 +1,6 @@
 const { response, request } = require("express");
 const Category = require("../models/category");
+const Event = require("../models/event");
 const { categoryQuery } = require('../helpers/category');
 const { calcPage } = require('../helpers/utils');
 
@@ -53,14 +54,22 @@ const categoriesDelete = async (req, res = response) => {
     })
 }
 const home = async (req = request, res = response) => {
-    const [result] = await Promise.all([
-        Category.find({isDelete: false, inHome:true})
-            .limit(10)
-    ])
+    let [categories] = await Promise.all([
+        Category.find({ isDelete: false, inHome: true }).limit(10)
+    ]);
+    if (categories.length > 0) {
+        for (let category of categories) {
+            category.events = await Event.find({ isDelete: false, isActive: true, category: category }).limit(10);
+        }
+    }
+    // await delay(3000);
     res.json({
-        data: result
+        data: categories
     })
 }
+const delay = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
 module.exports = {
     categoriesGet,
     categoriesPost,

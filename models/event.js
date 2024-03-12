@@ -21,7 +21,7 @@ const EventSchema = Schema({
         type: Boolean,
         default: false
     },
-    category:{
+    category: {
         type: Schema.Types.ObjectId,
         ref: 'Category'
     },
@@ -67,8 +67,8 @@ const EventSchema = Schema({
 })
 
 EventSchema.methods.toJSON = function () {
-    const { __v, _id,... event} = this.toObject();
-    event.id=_id
+    const { __v, _id, ...event } = this.toObject();
+    event.id = _id;
     return event;
 }
 

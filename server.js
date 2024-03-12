@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const path = require('path');
 const { dbConnection } = require('./database/config');
 const { socketController } = require('./controllers/socket.controllers');
+const bodyParser = require('body-parser');
 
 class Server {
 
@@ -34,7 +35,8 @@ class Server {
     }
 
     middlewares() {
-        
+        this.app.use(bodyParser.json({ limit: '50mb' }));
+        this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
         this.app.use(morgan('dev'))
         this.app.use(cors())
         this.app.use(express.json())
@@ -57,6 +59,7 @@ class Server {
         this.app.use('/api/webhooks', require('./routes/webhook.routes'));
         this.app.use('/api/mocks', require('./routes/mock.routes'));
         this.app.use('/api/categories', require('./routes/category.routes'));
+        this.app.use('/api/notifications', require('./routes/notification.routes'));
         this.app.use('/api/v2/users', require('./routes/publicUsers.routes'));
         this.app.use(express.static(path.join(__dirname, 'public')));
         this.app.get('*', (req, res) => {

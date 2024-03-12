@@ -9,7 +9,7 @@ const { isUniqueName, isDemoExist } = require('../middlewares/demo.middleware');
 const router = Router();
 
 router.get('/', [
-    validatJWT
+   // validatJWT
 ], demosGet);
 
 router.get('/:id', [

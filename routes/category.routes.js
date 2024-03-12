@@ -13,7 +13,7 @@ router.get('/home', [
 ], home);
 
 router.get('/', [
-    validatJWT
+    // validatJWT
 ], categoriesGet);
 
 router.get('/:id', [

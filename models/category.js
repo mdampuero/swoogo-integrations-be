@@ -15,7 +15,8 @@ const CategorySchema = Schema({
     inHome: {
         type: Boolean,
         default: false
-    }
+    },
+    events: []
 })
 
 CategorySchema.methods.toJSON = function () {

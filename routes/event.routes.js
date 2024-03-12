@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { eventsGet, eventsPut, eventsPost, eventsDelete, eventsGetOne, sliderHome,last } = require('../controllers/events.controllers');
+const { eventsGet, eventsPut, eventsPost, eventsDelete, eventsGetOne, sliderHome,last,similar } = require('../controllers/events.controllers');
 const { check } = require('express-validator');
 
 const { validateFields } = require('../middlewares/validate');
@@ -9,12 +9,16 @@ const { isUniqueName, isEventExist } = require('../middlewares/event.middleware'
 const router = Router();
 
 router.get('/', [
-    validatJWT
+    // validatJWT
 ], eventsGet);
 
 router.get('/sliderHome', [
     // validatJWT
 ], sliderHome);
+
+router.get('/similar/:id', [
+    // validatJWT
+], similar);
 
 router.get('/last', [
     // validatJWT
