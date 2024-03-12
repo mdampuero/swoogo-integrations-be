@@ -110,8 +110,8 @@ const base64ToFile = async (string) => {
         const fileName = 'archivo_' + Date.now() + '.' + extension;
         const filePath = path.join('public', uploadFolder, fileName);
         const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-        const host = process.env.HOST || 'localhost';
-        const port = process.env.PORT || 80;
+        const host = process.env.NODE_ENV === 'production' ? process.env.HOST : 'localhost';
+        const port = process.env.NODE_ENV === 'production' ? '' : ':'+process.env.PORT;
         await new Promise((resolve, reject) => {
             fs.writeFile(filePath, dataBuffer, (err) => {
                 if (err) {
@@ -122,7 +122,7 @@ const base64ToFile = async (string) => {
             });
         });
 
-        return `${schema}://${host}:${port}/${uploadFolder}/${fileName}`;
+        return `${schema}://${host}${port}/${uploadFolder}/${fileName}`;
     } catch (error) {
         throw new Error('Error al escribir el archivo: ' + error.message);
     }
