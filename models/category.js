@@ -16,7 +16,11 @@ const CategorySchema = Schema({
         type: Boolean,
         default: false
     },
-    events: []
+    events: [],
+    more: {
+        type: Boolean,
+        default: false
+    },
 })
 
 CategorySchema.methods.toJSON = function () {

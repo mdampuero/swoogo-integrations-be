@@ -57,12 +57,24 @@ const EventSchema = Schema({
     url: {
         type: String,
     },
+    order: {
+        type: Number,
+    },
     eventSwoogo: {
         type: String
     },
     created_at: {
         type: Date,
         default: new Date()
+    },
+    lat: {
+        type: Number,
+    },
+    lng: {
+        type: Number,
+    },
+    zoom: {
+        type: Number,
     },
 })
 

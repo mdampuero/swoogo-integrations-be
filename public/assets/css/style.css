@@ -6143,3 +6143,15 @@ File: scss
 .max-w-100{
   max-width: 100%;
 }
+
+#map {
+  width: 100%; /* o un tamaño específico en píxeles */
+  height: 400px; /* o un tamaño específico en píxeles */
+}
+.mapboxgl-marker {
+  position: absolute; /* o position: fixed; */
+}
+
+.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search, .mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-close, .mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-loading, .mapboxgl-ctrl-geocoder--pin-right{
+  display: none !important;
+}

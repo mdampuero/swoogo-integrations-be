@@ -14,8 +14,20 @@ const isEventExist = async (id) => {
     }
 }
 
+const isActive = async (req = request, res, next) => {
+    const { end_date } = req.body;
+    const dateToCheck = new Date(end_date);
+    const currentDate = new Date();
+    if (dateToCheck < currentDate) {
+        req.body.isActive = false 
+    } else {
+        req.body.isActive = true
+    }
+    next();
+}
 
 module.exports = {
     isUniqueName,
-    isEventExist
+    isEventExist,
+    isActive
 }

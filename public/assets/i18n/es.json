@@ -7,5 +7,10 @@
     "The password is required": "La contraseña es requerida",
     "The email is invalid": "El email es inválido",
     "The email is required": "El email es requerido",
-    "WEBSERVICE": "Web Service"
+    "WEBSERVICE": "Web Service",
+    "The start_date is required": "La Fecha inicio es requerida",
+    "The start_time is required": "La Hora inicio es requerida",
+    "The end_date is required": "La Fecha fin es requerida",
+    "The end_time is required": "La Hora fin es requerida",
+    "SETTING": "Configuración"
 }

@@ -3,6 +3,7 @@ const Category = require("../models/category");
 const Event = require("../models/event");
 const { categoryQuery } = require('../helpers/category');
 const { calcPage } = require('../helpers/utils');
+const { getSetting } = require('../helpers/setting');
 
 const categoriesGet = async (req = request, res = response) => {
     const { limit, sort, direction, offset, query } = categoryQuery(req);
@@ -54,15 +55,23 @@ const categoriesDelete = async (req, res = response) => {
     })
 }
 const home = async (req = request, res = response) => {
+    const setting = await getSetting();
     let [categories] = await Promise.all([
         Category.find({ isDelete: false, inHome: true }).limit(10)
     ]);
     if (categories.length > 0) {
         for (let category of categories) {
-            category.events = await Event.find({ isDelete: false, isActive: true, category: category }).limit(10);
+            category.events = await Event.find({ isDelete: false, isActive: true, category: category })
+            .limit(setting.max_slider_categories + 1);
+            let more = false;
+            if (category.events.length > setting.max_slider_categories) {
+                more = true;
+                category.events.pop();
+            }
+            category.more = more; 
         }
     }
-    // await delay(3000);
+    // await delay(4000);
     res.json({
         data: categories
     })
