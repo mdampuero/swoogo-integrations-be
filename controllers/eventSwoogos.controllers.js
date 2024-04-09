@@ -7,7 +7,7 @@ const eventSwoogoGet = async (req = request, res = response) => {
     try {
         const instance = axios.create({
             baseURL: `${process.env.SWOOGO_APIURL}event.json`,
-            params: { fields : "*"},
+            params: { fields : "*", "per-page": 100 },
             headers: { "Authorization": "Bearer "+ await authentication() }
         });
         const resp = await instance.get();
@@ -25,6 +25,7 @@ const eventSwoogoGet = async (req = request, res = response) => {
         })
     }
 }
+
 
 module.exports = {
     eventSwoogoGet
