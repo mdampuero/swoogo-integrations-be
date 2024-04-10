@@ -2,15 +2,7 @@
 
 <head>
     <script>
-        if (typeof registrantUpdateUrl === 'undefined') {
-            registrantUpdateUrl = '/frontend/registrant/-action-?eventId=125154&pageId=4001075';
-        } else {
-            oldRegistrantUpdateUrl = registrantUpdateUrl;
-            registrantUpdateUrl = '/frontend/registrant/-action-?eventId=125154&pageId=4001075';
-        }
-        eventSlug = 'ingrammicro-fondazo2023';
 
-        var __TRANSLATIONS = { "Close": "Cerrar", "Loading": "Loading" };
         window.jQuery || document.write('<script src="https://assets.swoogo.com/downloads/jquery.min.js"><\/script>');</script>
 
 </head>
@@ -58,10 +50,26 @@
         </div>
         <button type="submit" class="btn btn-standard registration-check-alert" name="continue" value="continue"
             role="button"><span>Continue</span> <i class="fas fa-arrow-circle-right "></i></button>
-    </form>
-    <script type="text/javascript" src="https://swoogo-integrations-be-production.up.railway.app/swoogo-integration.1.0.0.js"></script>
-    <script>
-        
+        </form>
+        <button onclick="createOrder()">Create Order</button>
+    <script type="text/javascript">
+        const createOrder = async () => {
+           
+            return jQuery.ajax({
+                url: "https://clickgroup-backend-production.up.railway.app/api/payments/create-order",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(
+                    {
+                        "dsadsa":"dsadsa",
+
+                    }
+                ),
+
+                crossDomain: true
+            });
+        }
     </script>
 </body>
 

@@ -35,7 +35,7 @@ class Server {
     }
 
     middlewares() {
-        const whitelist = [ 'clickgroup.swoogo.com' ];
+        const whitelist = [ 'https://clickgroup.swoogo.com/' ];
         this.app.use(bodyParser.json({ limit: '50mb' }));
         this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
         this.app.use(morgan('dev'))
