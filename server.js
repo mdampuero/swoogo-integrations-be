@@ -11,7 +11,7 @@ class Server {
     constructor() {
         this.app = express();
         this.port = process.env.PORT || 3000
-        this.server = require('http').createServer(this.app)
+        this.server = require('https').createServer(this.app)
         this.io = require('socket.io')(this.server,{
             cors: {
               origin: '*',
