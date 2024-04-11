@@ -18,7 +18,14 @@ const createOrder = async (req = request, res = response) => {
             status: 'empty'
         });
         items.forEach(async item => {
-            let unit_price = parseInt(item.Price.replace(",", "").replace(integration.item_currency, ""));
+            let unit_price;
+            if (item.Price !== undefined) {
+                unit_price = parseInt(item.Price.replace(",", "").replace(integration.item_currency, ""));
+            }else if (item.Bruto !== undefined) {
+                unit_price = parseInt(item.Bruto.replace(",", "").replace(integration.item_currency, ""));
+            }else{
+                console.error("Ni 'Price' ni 'Bruto' están presentes en el objeto.");
+            }
             items_order.push({
                 "title": item.Package + " (" + item["Full Name"] + ")",
                 "quantity": 1,
