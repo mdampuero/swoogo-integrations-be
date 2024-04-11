@@ -28,7 +28,7 @@ const createOrder = async (req = request, res = response) => {
             if (item.Price !== undefined) {
                 unit_price = parseInt(item.Price.replace(",", "").replace(integration.item_currency, ""));
             }else if (item.Bruto !== undefined) {
-                unit_price = parseInt(item.Bruto.replace(",", "").replace(integration.item_currency, ""));
+                unit_price = parseInt(item.Bruto.replace(".", "").replace(integration.item_currency, ""));
             }else{
                 console.error("Ni 'Price' ni 'Bruto' están presentes en el objeto.");
             }
