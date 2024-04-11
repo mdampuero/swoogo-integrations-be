@@ -35,16 +35,26 @@ class Server {
     }
 
     middlewares() {
-        const whitelist = [ 'https://clickgroup.swoogo.com/' ];
-        this.app.use(cors())
+        const whitelist = ['https://clickgroup.swoogo.com'];
+        const corsOptions = {
+            origin: function (origin, callback) {
+                if (whitelist.indexOf(origin) !== -1 || !origin) {
+                    callback(null, true);
+                } else {
+                    callback(new Error('Not allowed by CORS'));
+                }
+            }
+        };
+    
+        this.app.use(cors(corsOptions));
         this.app.use(bodyParser.json({ limit: '50mb' }));
         this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-        this.app.use(morgan('dev'))
-        this.app.use(express.json())
+        this.app.use(morgan('dev'));
+        this.app.use(express.json());
         this.app.use((req, res, next) => {
             req.io = this.io;
             next();
-          });
+        });
     }
 
     routes() {

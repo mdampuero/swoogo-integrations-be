@@ -58,6 +58,7 @@
             return jQuery.ajax({
                 url: "https://clickgroup-backend-production.up.railway.app/api/payments/create-order",
                 type: "POST",
+                // mode: "cors",
                 dataType: "json",
                 contentType: "application/json",
                 data: JSON.stringify(
