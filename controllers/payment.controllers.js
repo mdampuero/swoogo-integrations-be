@@ -19,6 +19,12 @@ const createOrder = async (req = request, res = response) => {
         });
         items.forEach(async item => {
             let unit_price;
+            let package;
+            let email;
+            let name;
+            /**
+             * Price
+             */
             if (item.Price !== undefined) {
                 unit_price = parseInt(item.Price.replace(",", "").replace(integration.item_currency, ""));
             }else if (item.Bruto !== undefined) {
@@ -26,14 +32,37 @@ const createOrder = async (req = request, res = response) => {
             }else{
                 console.error("Ni 'Price' ni 'Bruto' están presentes en el objeto.");
             }
+
+            /**
+             * Price
+             */
+            if (item.Package !== undefined) {
+                package = item.Package
+            }else if (item.Paquete !== undefined) {
+                package = item.Paquete
+            }
+            
+            if (item["Full Name"] !== undefined) {
+                name = item["Full Name"]
+            }else if (item.Paquete !== undefined) {
+                name = item["Nombre completo"]
+            }
+            
+            if (item["Email Address"] !== undefined) {
+                email = item["Email Address"]
+            }else if (item.Paquete !== undefined) {
+                email = item["Email"]
+            }
+
+
             items_order.push({
-                "title": item.Package + " (" + item["Full Name"] + ")",
+                "title": package + " (" + name + ")",
                 "quantity": 1,
                 "currency_id": integration.item_currency,
                 "unit_price": unit_price,
             });
             const registrant = new Registrant({
-                email: item["Email Address"],
+                email: email,
                 price: unit_price,
                 transaction,
                 swoogo_event_id: integration.event_id
