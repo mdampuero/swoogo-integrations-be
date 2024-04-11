@@ -69,7 +69,7 @@ const payment = async () => {
     try {
         socket = io(gateway);
         socket.on('message', (payload) => {
-            console.log(payload)
+            // console.log(payload)
             if (payload.transaction_id == transaction_id)
                 if (payload.action == 'themify.58ecddba064e63f7') $(registrantForm).submit(); else {
                     processError(payload);
@@ -77,7 +77,7 @@ const payment = async () => {
         })
         const res = await createOrder();
 
-        console.log("Status", res)
+        // console.log("Status", res)
         transaction_id = res.data.metadata.transaction.id;
 
         btnSubmit.find("span").html(res.data.metadata.labels.btnSubmit);
