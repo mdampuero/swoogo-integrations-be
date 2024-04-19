@@ -35,7 +35,7 @@ class Server {
     }
 
     middlewares() {
-        const whitelist = ['https://clickgroup.swoogo.com'];
+        const whitelist = ['https://clickgroup.swoogo.com','https://clickgroup-backend-production.up.railway.app','https://rainbow-kheer-d54ca6.netlify.app'];
         const corsOptions = {
             origin: function (origin, callback) {
                 if (whitelist.indexOf(origin) !== -1 || !origin) {
@@ -47,6 +47,8 @@ class Server {
         };
     
         this.app.use(cors());
+        /** To do: habilitar CORS */
+        // this.app.use(cors(corsOptions));
         this.app.use(bodyParser.json({ limit: '50mb' }));
         this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
         this.app.use(morgan('dev'));
