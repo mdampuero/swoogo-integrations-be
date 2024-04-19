@@ -1,2 +1,5 @@
 #!/bin/bash
-npm run dev
+folderName=$(basename "$PWD")
+echo "---- START CONTAINER ----"
+docker start c-"$folderName"
+
