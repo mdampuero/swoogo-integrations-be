@@ -7,7 +7,8 @@ if [ $# -eq 0 ]; then
 fi
 
 puerto=$1
-
+echo "---- STOP CONTAINER ----"
+docker stop c-"$folderName"
 echo "---- DELETE CONTAINER ----"
 docker rm c-"$folderName"
 echo "---- BUILD CONTAINER ----"

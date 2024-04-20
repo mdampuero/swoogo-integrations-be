@@ -4,29 +4,29 @@ const { demoQuery } = require('../helpers/demo');
 const { calcPage } = require('../helpers/utils');
 
 const demosGet = async (req = request, res = response) => {
-    const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    const host = process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'localhost';
-    const port = process.env.NODE_ENV === 'production' ? '' : ':' + process.env.PORT;
+    // const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    // const host = process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'localhost';
+    // const port = process.env.NODE_ENV === 'production' ? '' : ':' + process.env.PORT;
 
-    res.json({
-        schema,
-        host,
-        port
-    })
-    // const { limit, sort, direction, offset, query } = demoQuery(req);
-    // const [total, result] = await Promise.all([
-    //     Demo.countDocuments(query),
-    //     Demo.find(query)
-    //         .sort([[sort, direction]])
-    //         .limit(limit)
-    //         .skip(offset)
-    // ])
     // res.json({
-    //     total,
-    //     pages: calcPage(total, limit),
-    //     limit,
-    //     data: result
+    //     schema,
+    //     host,
+    //     port
     // })
+    const { limit, sort, direction, offset, query } = demoQuery(req);
+    const [total, result] = await Promise.all([
+        Demo.countDocuments(query),
+        Demo.find(query)
+            .sort([[sort, direction]])
+            .limit(limit)
+            .skip(offset)
+    ])
+    res.json({
+        total,
+        pages: calcPage(total, limit),
+        limit,
+        data: result
+    })
 }
 
 const demosGetOne = async (req, res = response) => {
