@@ -110,7 +110,7 @@ const base64ToFile = async (string) => {
         const fileName = 'archivo_' + Date.now() + '.' + extension;
         const filePath = path.join('public', uploadFolder, fileName);
         // const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-        const schema = process.env.NODE_ENV === 'production' ? 'http' : 'http';
+        const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
         const host = process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'localhost';
         const port = process.env.NODE_ENV === 'production' ? '' : ':'+process.env.PORT;
         await new Promise((resolve, reject) => {

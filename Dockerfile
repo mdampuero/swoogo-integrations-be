@@ -13,3 +13,5 @@ COPY . .
 EXPOSE 3000
 
 CMD ["node", "app.js"]
+
+VOLUME ["/app/public/uploads"]
