@@ -1,0 +1,17 @@
+# mover este fila a /etc/systemd/system/swoogo-integrations-be.service
+
+[Unit]
+Description=swoogo-integrations-be
+After=docker.service network.target
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker start -a c-swoogo-integrations-be
+ExecStop=/usr/bin/docker stop -t 2 c-swoogo-integrations-be
+
+[Install]
+WantedBy=multi-user.target
+
+#Ejecutar
+#sudo systemctl enable c-swoogo-integrations-be
+#sudo systemctl start c-swoogo-integrations-be
