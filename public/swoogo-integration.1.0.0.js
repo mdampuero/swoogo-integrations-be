@@ -173,6 +173,6 @@ function sweet() {
 document.addEventListener("DOMContentLoaded", function (event) {
     //do work
     dynamicallyLoadScript('https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js');
-    dynamicallyLoadScript('https://clickgroup-backend-production.up.railway.app/socket.io/socket.io.js');
+    dynamicallyLoadScript('https://clickgroup-be.latamhosting.com.ar/socket.io/socket.io.js');
     dynamicallyLoadScript('https://cdn.jsdelivr.net/npm/sweetalert2@11');
 });
