@@ -14,5 +14,5 @@ docker rm c-"$folderName"
 echo "---- BUILD CONTAINER ----"
 docker build -t i-"$folderName" .
 echo "---- RUN CONTAINER ----"
-docker run -d -p $puerto:3000 --name c-"$folderName" i-"$folderName"
+docker run -d -p $puerto:3000 -v $(pwd)/public/uploads:/app/public/uploads --name c-"$folderName" i-"$folderName"
 
