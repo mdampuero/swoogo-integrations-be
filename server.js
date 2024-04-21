@@ -35,7 +35,12 @@ class Server {
     }
 
     middlewares() {
-        const whitelist = ['https://clickgroup.swoogo.com','https://clickgroup-be.latamhosting.com.ar','https://clickgroup-bo.latamhosting.com.ar'];
+        const whitelist = [
+            'https://clickgroup.swoogo.com',
+            'https://clickgroup-fe.latamhosting.com.ar',
+            'https://clickgroup-be.latamhosting.com.ar',
+            'https://clickgroup-bo.latamhosting.com.ar'
+        ];
         const corsOptions = {
             origin: function (origin, callback) {
                 if (whitelist.indexOf(origin) !== -1 || !origin) {
