@@ -67,7 +67,7 @@ function isFormOK() {
 const payment = async () => {
     originalText = btnSubmit.find("span").html();
     try {
-        socket = io(gateway);
+        socket = io('http://54.233.128.235:3000/');
         socket.on('message', (payload) => {
             // console.log(payload)
             if (payload.transaction_id == transaction_id)

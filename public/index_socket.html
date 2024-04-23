@@ -12,7 +12,18 @@
     <button onclick="emit()">Emitir</button>
     <script src="https://clickgroup-be.latamhosting.com.ar/socket.io/socket.io.js"></script>
     <script>
-        const socket = io('http://localhost:8080');
+        
+
+            // const socket = io('http://54.233.128.235:3000/');
+            const socket = io('https://clickgroup-be.latamhosting.com.ar/');
+            socket.on('message',(payload) => {
+            console.log(payload)
+            if(payload.transaction_id=='1234'){
+                if(payload.action=='continue'){
+                    console.log('Continuar')
+                }
+            }
+        })
         // socket.on('connect', () => {
         //     console.log("Cliente: Conectado")
         // })
@@ -22,14 +33,7 @@
         // socket.on('devolver-mensaje', (payload) => {
         //     console.log(payload)
         // })
-        socket.on('message',(payload) => {
-            console.log(payload)
-            if(payload.transaction_id=='1234'){
-                if(payload.action=='continue'){
-                    console.log('Continuar')
-                }
-            }
-        })
+        
         function emit(){
             console.log("emit")
             socket.emit('mensaje','Desde el cliente', (callback) => {
