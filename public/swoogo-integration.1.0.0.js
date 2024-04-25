@@ -68,25 +68,17 @@ const payment = async () => {
     originalText = btnSubmit.find("span").html();
     try {
         socket = io(gateway);
-        socket.on('connect', () => {
-            console.log('Connect');
-        });
-        socket.emit('message', "Hola soy el paymen");
         socket.on('message', (payload) => {
-            console.log(payload)
             if (payload.transaction_id == transaction_id)
                 if (payload.action == 'themify.58ecddba064e63f7') $(registrantForm).submit(); else {
                     processError(payload);
                 }
         })
-        socket.on('message', (mensaje) => {
-            console.log('Mensaje recibido del servidor:', mensaje);
-        });
         const res = await createOrder();
 
         // console.log("Status", res)
         transaction_id = res.data.metadata.transaction.id;
-        console.log(transaction_id)
+
         btnSubmit.find("span").html(res.data.metadata.labels.btnSubmit);
         let urlInitPoint = res.data.sandbox_init_point;
         if (mode === "prod") {

@@ -123,7 +123,7 @@ const base64ToFile = async (string) => {
             });
         });
 
-        return `${schema}://${host}${port}/${uploadFolder}/${fileName}`;
+        return `${host}${port}/${uploadFolder}/${fileName}`;
     } catch (error) {
         throw new Error('Error al escribir el archivo: ' + error.message);
     }

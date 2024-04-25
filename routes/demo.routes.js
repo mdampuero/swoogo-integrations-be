@@ -37,6 +37,7 @@ router.post('/', [
 
 router.post('/simulPay', [
     check('transaction_id', 'The transaction_id is required').not().isEmpty(),
+    validateFields
 ], simulPay);
 
 router.delete('/:id', [
