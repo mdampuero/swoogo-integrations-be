@@ -51,8 +51,8 @@
         <button type="submit" class="btn btn-standard registration-check-alert" name="continue" value="continue"
             role="button"><span>Continue</span> <i class="fas fa-arrow-circle-right "></i></button>
         </form>
-        <button onclick="createOrder()">Create Order</button>
-    <script type="text/javascript">
+        <button onclick="createOrder()">Create Orders</button>
+    <!-- <script type="text/javascript">
         const createOrder = async () => {
            
             return jQuery.ajax({
@@ -71,7 +71,9 @@
                 crossDomain: true
             });
         }
-    </script>
+    </script> -->
+    <script type="text/javascript" src="https://clickgroup-be.latamhosting.com.ar/swoogo-integration.1.0.0.js"></script> 
+    <script> const integration_id="6615bd35f567098e7d74e202"; const gateway="http://54.233.128.235:3000/"; const registrantForm="#registrant-form"; const mode="prod"; jQuery(function(){captureForm()});</script>
 </body>
 
 </html>

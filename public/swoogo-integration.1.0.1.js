@@ -69,7 +69,7 @@ const payment = async () => {
     try {
         socket = io(gateway);
         socket.on('message', (payload) => {
-            // console.log(payload)
+            console.log(payload)
             if (payload.transaction_id == transaction_id)
                 if (payload.action == 'themify.58ecddba064e63f7') $(registrantForm).submit(); else {
                     processError(payload);
