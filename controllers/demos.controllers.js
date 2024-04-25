@@ -37,6 +37,19 @@ const demosGetOne = async (req, res = response) => {
     })
 }
 
+const simulPay = async (req, res = response) => {
+    const { transaction_id } = req.body;
+
+    req.io.emit("message", {
+        "transaction_id": transaction_id,
+        "status": "approved",
+        "action": "themify.58ecddba064e63f7"
+    });
+    res.json({
+        "result": "ok"
+    })
+}
+
 const demosPost = async (req, res = response) => {
     const { name, description } = req.body;
     const demo = new Demo({ name, description });
@@ -68,5 +81,6 @@ module.exports = {
     demosPost,
     demosPut,
     demosDelete,
-    demosGetOne
+    demosGetOne,
+    simulPay
 }

@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { demosGet, demosPut, demosPost, demosDelete, demosGetOne } = require('../controllers/demos.controllers');
+const { demosGet, demosPut, demosPost, demosDelete, demosGetOne, simulPay } = require('../controllers/demos.controllers');
 const { check } = require('express-validator');
 
 const { validateFields } = require('../middlewares/validate');
@@ -34,6 +34,10 @@ router.post('/', [
     check('name').custom(isUniqueName),
     validateFields
 ], demosPost);
+
+router.post('/simulPay', [
+    check('transaction_id', 'The transaction_id is required').not().isEmpty(),
+], simulPay);
 
 router.delete('/:id', [
     validatJWT,
