@@ -8,9 +8,7 @@ const socketController = (socket) => {
     })
     socket.on('message', (payload, callback) => {
         console.log(payload);
-        callback({
-            'msg': 'respuesta a esa peticion'
-        })
+        
         // this.io.emit('devolver-mensaje',payload);
      })
 };
