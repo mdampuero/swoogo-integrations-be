@@ -8,6 +8,7 @@ const FormData = require('form-data');
 
 const webhookPost = async (req = request, res = response) => {
     const body = req.body;
+    console.log(body);
     if (body.action == "insert" && body.object == "registrant") {
         const registrants = await Registrant.find({ swoogo_event_id: body.registrant.event_id, email: body.registrant.email })
             .populate("transaction", 'status');
