@@ -8,7 +8,7 @@ const socketController = (socket) => {
     })
     socket.on('message', (payload, callback) => {
         console.log(payload);
-        socket.emit('message', {
+        this.io.emit('message', {
             'received': true,
             'data': payload
         });

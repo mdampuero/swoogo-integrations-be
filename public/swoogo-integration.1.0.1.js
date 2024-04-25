@@ -86,7 +86,7 @@ const payment = async () => {
 
         // console.log("Status", res)
         transaction_id = res.data.metadata.transaction.id;
-
+        console.log(transaction_id)
         btnSubmit.find("span").html(res.data.metadata.labels.btnSubmit);
         let urlInitPoint = res.data.sandbox_init_point;
         if (mode === "prod") {
