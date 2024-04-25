@@ -20,9 +20,11 @@ var makeJsonFromTable = function (tableID) {
         header.push(jQuery(j).text())
     })
     jQuery.each(jQuery(tblbody).find("tr"), function (key, value) {
-        var jObject = {};
+        // var jObject = {};
+        var jObject = [];
         for (var x = 0; x < (header.length - 1); x++) {
-            jObject[header[x]] = jQuery(this).find("td").eq(x).text()
+            // jObject[header[x]] = jQuery(this).find("td").eq(x).text()
+            jObject.push(jQuery(this).find("td").eq(x).text())
         }
         JObjectArray.push(jObject)
     });

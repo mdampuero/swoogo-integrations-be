@@ -6,6 +6,7 @@ const Transaction = require("../models/transaction");
 const Registrant = require("../models/registrant");
 
 const createOrder = async (req = request, res = response) => {
+
     try {
         const { items } = req.body;
         const integration = req.integration
@@ -17,48 +18,32 @@ const createOrder = async (req = request, res = response) => {
             integration,
             status: 'empty'
         });
+        let errors = [];
         items.forEach(async item => {
-            let unit_price;
-            let package;
-            let email;
-            let name;
-            /**
-             * Price
-             */
-            if (item.Price !== undefined) {
-                unit_price = parseInt(item.Price.replace(",", "").replace(integration.item_currency, ""));
-            }else if (item.Bruto !== undefined) {
-                unit_price = parseInt(item.Bruto.replace(".", "").replace(integration.item_currency, ""));
-            }else if (item.Gross !== undefined) {
-                unit_price = parseInt(item.Gross.replace(",", "").replace(integration.item_currency, ""));
-            }else{
-                console.error("Ni 'Price' ni 'Bruto' están presentes en el objeto.");
-            }
+            const name = item[0];
+            const email = item[1];
+            const description = item[2];
+            let unit_price = item[3];
 
-            /**
-             * Price
-             */
-            if (item.Package !== undefined) {
-                package = item.Package
-            }else if (item.Paquete !== undefined) {
-                package = item.Paquete
+            if (typeof name == "undefined" || name.length <= 0) {
+                errors.push("Name invalid");
+                return;
             }
-            
-            if (item["Full Name"] !== undefined) {
-                name = item["Full Name"]
-            }else if (item.Paquete !== undefined) {
-                name = item["Nombre completo"]
+            if (typeof email == "undefined" || email.length <= 0) {
+                errors.push("Email invalid");
+                return;
             }
-            
-            if (item["Email Address"] !== undefined) {
-                email = item["Email Address"]
-            }else if (item.Paquete !== undefined) {
-                email = item["Email"]
+            if (typeof description == "undefined" || description.length <= 0) {
+                errors.push("Description invalid");
+                return;
             }
-
-
+            if (typeof unit_price == "undefined" || unit_price.length <= 0) {
+                errors.push("Unit price invalid");
+                return;
+            }
+            unit_price = parseInt(unit_price.replace(",", "").replace(integration.item_currency, ""));
             items_order.push({
-                "title": package + " (" + name + ")",
+                "title": description + " (" + name + ")",
                 "quantity": 1,
                 "currency_id": integration.item_currency,
                 "unit_price": unit_price,
@@ -73,31 +58,45 @@ const createOrder = async (req = request, res = response) => {
             await registrant.save();
         });
 
-        transaction.registrants = registrants
+        if (errors.length > 0) {
 
-        integration.transactions.push(transaction);
-        await Promise.all([
-            transaction.save(),
-            integration.save()
-        ]);
+            res.status(400).json({
+                "result": false,
+                "data": errors
+            })
+        } else {
 
-        mercadopago.configure({
-            access_token: integration.access_token
-        });
-        const result = await mercadopago.preferences.create({
-            items: items_order,
-            metadata: {
-                transaction, labels: {
-                    btnSubmit: 'Waiting for payment'
-                }
-            },
-            notification_url: `${process.env.DOMAIN}/api/payments/webhook?integration_id=${integration.id}`
-        });
+            console.log(items_order);
+            // res.json({
+            //     items_order
+            // })
+            transaction.registrants = registrants
 
-        res.json({
-            "data": result.body,
-            integration
-        })
+            integration.transactions.push(transaction);
+            await Promise.all([
+                transaction.save(),
+                integration.save()
+            ]);
+
+            mercadopago.configure({
+                access_token: integration.access_token
+            });
+            const result = await mercadopago.preferences.create({
+                items: items_order,
+                metadata: {
+                    transaction, labels: {
+                        btnSubmit: 'Waiting for payment'
+                    }
+                },
+                notification_url: `${process.env.DOMAIN}/api/payments/webhook?integration_id=${integration.id}`
+            });
+
+            res.json({
+                "data": result.body,
+                integration
+            })
+        }
+
     } catch (error) {
         console.log(error)
         res.status((typeof error.status != "undefined") ? error.status : 500).json({
@@ -152,7 +151,7 @@ const webhook = async (req = request, res = response) => {
                     transaction.save()
                 ]);
             }
-            if(data.body.status === "approved"){
+            if (data.body.status === "approved") {
                 req.io.emit("message", {
                     "transaction_id": transaction.id,
                     "status": data.body.status,
