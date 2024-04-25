@@ -24,7 +24,7 @@ const createOrder = async (req = request, res = response) => {
             const email = item[1];
             const description = item[2];
             let unit_price = item[3];
-
+            
             if (typeof name == "undefined" || name.length <= 0) {
                 errors.push("Name invalid");
                 return;
@@ -41,7 +41,9 @@ const createOrder = async (req = request, res = response) => {
                 errors.push("Unit price invalid");
                 return;
             }
-            unit_price = parseInt(unit_price.replace(",", "").replace(integration.item_currency, ""));
+            unit_price = unit_price.replace(",", "");
+            unit_price = unit_price.replace(".", "");
+            unit_price = parseInt(unit_price.replace(integration.item_currency, ""));
             items_order.push({
                 "title": description + " (" + name + ")",
                 "quantity": 1,
