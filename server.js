@@ -36,6 +36,7 @@ class Server {
 
     middlewares() {
         const whitelist = [
+            'http://localhost:8080',
             'https://clickgroup.swoogo.com',
             'https://clickgroup-fe.latamhosting.com.ar',
             'https://clickgroup-be.latamhosting.com.ar',
