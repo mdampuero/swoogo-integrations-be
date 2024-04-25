@@ -68,6 +68,10 @@ const payment = async () => {
     originalText = btnSubmit.find("span").html();
     try {
         socket = io(gateway);
+        socket.on('connect', () => {
+            console.log('Connect');
+        });
+        socket.emit('message', "Hola soy el paymen");
         socket.on('message', (payload) => {
             console.log(payload)
             if (payload.transaction_id == transaction_id)
@@ -75,6 +79,9 @@ const payment = async () => {
                     processError(payload);
                 }
         })
+        socket.on('message', (mensaje) => {
+            console.log('Mensaje recibido del servidor:', mensaje);
+        });
         const res = await createOrder();
 
         // console.log("Status", res)
