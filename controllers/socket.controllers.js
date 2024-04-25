@@ -2,11 +2,11 @@
 
 
 const socketController = (socket) => {
-    console.log("Server: Conectado");
+    console.log("Socket: Conectado");
     socket.on('disconnet', () => {
        console.log("Server: Desconectado")
     })
-    socket.on('mensaje', (payload, callback) => {
+    socket.on('message', (payload, callback) => {
         console.log(payload);
         callback({
             'msg': 'respuesta a esa peticion'
