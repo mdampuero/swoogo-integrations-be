@@ -12,16 +12,16 @@ class Server {
         this.app = express();
         this.port = process.env.PORT || 3000
         this.server = require('http').createServer(this.app)
-        //Connect DB
-        this.connectDB();
-        
-        //Middlewares
-        this.middlewares();
         this.io = require('socket.io')(this.server,{
             cors: {
               origin: '*',
             }
           })
+        //Connect DB
+        this.connectDB();
+
+        //Middlewares
+        this.middlewares();
 
         //Routes
         this.routes();
@@ -36,8 +36,6 @@ class Server {
 
     middlewares() {
         const whitelist = [
-            'http://localhost:8080',
-            'http://localhost:4200',
             'https://clickgroup.swoogo.com',
             'https://clickgroup-fe.latamhosting.com.ar',
             'https://clickgroup-be.latamhosting.com.ar',
@@ -53,9 +51,9 @@ class Server {
             }
         };
     
-        //this.app.use(cors());
-        /** To do: habilitar CORS */
         this.app.use(cors(corsOptions));
+        /** To do: habilitar CORS */
+        // this.app.use(cors(corsOptions));
         this.app.use(bodyParser.json({ limit: '50mb' }));
         this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
         this.app.use(morgan('dev'));
