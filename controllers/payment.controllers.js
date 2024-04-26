@@ -133,7 +133,9 @@ const backPending = (req = request, res = response) => {
 const webhook = async (req = request, res = response) => {
     try {
         const payment = req.query;
+        console.log(payment);
         let integration = await Integration.findById(payment.integration_id);
+        console.log(integration)
         let data;
         if (integration && payment.topic === "payment" && typeof payment.id != "undefined" && payment.id) {
             mercadopago.configure({

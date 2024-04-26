@@ -35,23 +35,27 @@ class Server {
     }
 
     middlewares() {
-        const whitelist = [
-            'https://clickgroup.swoogo.com',
-            'https://clickgroup-fe.latamhosting.com.ar',
-            'https://clickgroup-be.latamhosting.com.ar',
-            'https://clickgroup-bo.latamhosting.com.ar'
-        ];
-        const corsOptions = {
-            origin: function (origin, callback) {
-                if (whitelist.indexOf(origin) !== -1 || !origin) {
-                    callback(null, true);
-                } else {
-                    callback(new Error('Not allowed by CORS'));
+        if(process.env.NODE_ENV === 'production'){
+            const whitelist = [
+                'https://clickgroup.swoogo.com',
+                'https://clickgroup-fe.latamhosting.com.ar',
+                'https://clickgroup-be.latamhosting.com.ar',
+                'https://clickgroup-bo.latamhosting.com.ar'
+            ];
+            const corsOptions = {
+                origin: function (origin, callback) {
+                    if (whitelist.indexOf(origin) !== -1 || !origin) {
+                        callback(null, true);
+                    } else {
+                        callback(new Error('Not allowed by CORS'));
+                    }
                 }
-            }
-        };
-    
-        this.app.use(cors(corsOptions));
+            };
+            this.app.use(cors(corsOptions));
+        }else{
+            this.app.use(cors());
+        }
+        
         /** To do: habilitar CORS */
         // this.app.use(cors(corsOptions));
         this.app.use(bodyParser.json({ limit: '50mb' }));

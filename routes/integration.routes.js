@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { integrationsGet, integrationsPut, integrationsPost, integrationsDelete, integrationsGetOne, integrationsStats,integrationsTransactions } = require('../controllers/integrations.controllers');
+const { integrationsGet, integrationsGetSession, integrationsPut, integrationsPost, integrationsDelete, integrationsGetOne, integrationsStats,integrationsTransactions } = require('../controllers/integrations.controllers');
 const { check } = require('express-validator');
 const { validatJWT } = require('../middlewares/validate-jwt');
 const { isIntegrationTypeValid, checkFieldByType, isIntegrationExist } = require('../middlewares/integration.middleware');
@@ -17,6 +17,12 @@ router.get('/:id', [
     check('id').custom(isIntegrationExist),
     validateFields
 ], integrationsGetOne);
+
+router.get('/sessions/:id/:sessionId', [
+    check('id', 'The id is not valid').isMongoId(),
+    check('id').custom(isIntegrationExist),
+    validateFields
+], integrationsGetSession);
 
 router.get('/stats/get', [
     validatJWT,
