@@ -38,6 +38,7 @@ class Server {
         if(process.env.NODE_ENV === 'production'){
             const whitelist = [
                 'https://clickgroup.swoogo.com',
+                'https://qrscan.latamhosting.net',
                 'https://clickgroup-fe.latamhosting.com.ar',
                 'https://clickgroup-be.latamhosting.com.ar',
                 'https://clickgroup-bo.latamhosting.com.ar'
