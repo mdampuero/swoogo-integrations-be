@@ -32,6 +32,11 @@ const checkFieldByType = async (req = request, res, next) => {
                 errors.push(buildError("access_token", "El campo 'access_token' es requerido", "access_token"));
             
             break;
+        case 'CHECKIN':
+            if (typeof body.access_token == "undefined" || !body.access_token)
+                errors.push(buildError("access_token", "El campo 'access_token' es requerido", "access_token"));
+            
+            break;
     }
     if (errors.length > 0) {
         return res.status(400).json({
