@@ -24,7 +24,7 @@ const createOrder = async (req = request, res = response) => {
             const email = item[1];
             const description = item[2];
             let unit_price = item[3];
-            
+
             if (typeof name == "undefined" || name.length <= 0) {
                 errors.push("Name invalid");
                 return;
@@ -164,11 +164,12 @@ const webhook = async (req = request, res = response) => {
                 "result": true,
                 "data": data
             })
+        }else{
+            res.status(404).json({
+                "result": false,
+                "data": null
+            });
         }
-        res.status(404).json({
-            "result": false,
-            "data": null
-        });
     } catch (error) {
         console.log(error)
         res.status((typeof error.status != "undefined") ? error.status : 500).json({
