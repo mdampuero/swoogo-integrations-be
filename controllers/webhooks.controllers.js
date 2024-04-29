@@ -29,12 +29,11 @@ const webhookPost = async (req = request, res = response) => {
                         const resp = await axios.put(`${process.env.SWOOGO_APIURL}registrants/update/${registrant.swoogo_id}.json`, formData, {
                             headers: { "Authorization": "Bearer " + await authentication() }
                         });
-                        const jsonObject = {};
-                        for (const [key, value] of formData) {
-                            jsonObject[key] = value;
-                        }
+                        const jsonObject = { 'c_3473417': '17536652' };
                         logger.info("Registrant-Webhook-Put")
                         logger.info(jsonObject)
+                        logger.info("Registrant-Webhook-Put-Response")
+                        logger.info(resp.data)
                     }
                 });
                 return res.json({
