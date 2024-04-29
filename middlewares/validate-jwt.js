@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require("../models/user");
-
+const { logger } = require('../helpers/utils');
 const validatJWT = async (req = request, res, next) => {
     const token = req.header('x-token');
     try {
@@ -15,6 +15,7 @@ const validatJWT = async (req = request, res, next) => {
         req.user = user
         next();
     } catch (e) {
+        logger.error(e)
         return res.status(401).json({
             response: e
         })

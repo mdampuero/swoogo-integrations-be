@@ -9,10 +9,13 @@ const FormData = require('form-data');
 const webhookPost = async (req = request, res = response) => {
     try {
         const body = req.body;
-        console.log(body);
+        logger.info("Swoogo-Webhook-body")
+        logger.info(body)
         if (body.action == "insert" && body.object == "registrant") {
             const registrants = await Registrant.find({ swoogo_event_id: body.registrant.event_id, email: body.registrant.email })
                 .populate("transaction", 'status');
+            logger.info("Registrant-Webhook")
+            logger.info(registrants)
             if (registrants.length > 0) {
                 registrants.forEach(async registrant => {
                     if (registrant.transaction.status == "approved") {
@@ -25,6 +28,12 @@ const webhookPost = async (req = request, res = response) => {
                         const resp = await axios.put(`${process.env.SWOOGO_APIURL}registrants/update/${registrant.swoogo_id}.json`, formData, {
                             headers: { "Authorization": "Bearer " + await authentication() }
                         });
+                        const jsonObject = {};
+                        for (const [key, value] of formData) {
+                            jsonObject[key] = value;
+                        }
+                        logger.info("Registrant-Webhook-Put")
+                        logger.info(jsonObject)
                     }
                 });
                 return res.json({
@@ -32,12 +41,12 @@ const webhookPost = async (req = request, res = response) => {
                 })
             }
         }
+        logger.warn("Not found registrant")
         return res.status(404).json({
             "result": "Not found registrant"
         })
     } catch (error) {
-        console.error(error);
-        // Manejo de errores
+        logger.error(error);
         res.status(500).send('Error interno del servidor');
     }
 }

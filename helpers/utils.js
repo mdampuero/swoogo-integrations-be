@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const validator = require('validator');
+const winston = require("winston");
+
 const encryptPassword = async (password) => {
     const salt = bcryptjs.genSaltSync(10);
     user.password = bcryptjs.hashSync(salt);
@@ -101,10 +103,10 @@ const getAllFields = (items, mapper) => {
 
 const base64ToFile = async (string) => {
     try {
-        if(string == "##delete##"){
+        if (string == "##delete##") {
             return '';
         }
-        const uploadFolder='uploads'
+        const uploadFolder = 'uploads'
         const words = string.split(';base64,');
         const extension = words[0].replace('data:image/', '');
         const dataBuffer = Buffer.from(words[1], 'base64');
@@ -113,7 +115,7 @@ const base64ToFile = async (string) => {
         // const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
         const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
         const host = process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'localhost';
-        const port = process.env.NODE_ENV === 'production' ? '' : ':'+process.env.PORT;
+        const port = process.env.NODE_ENV === 'production' ? '' : ':' + process.env.PORT;
         await new Promise((resolve, reject) => {
             fs.writeFile(filePath, dataBuffer, (err) => {
                 if (err) {
@@ -151,11 +153,22 @@ const sendEmail = async (subject, body) => {
         throw error;
     }
 }
+
 const emailIsValid = async (string) => {
-    // Expresión regular para validar un correo electrónico
     const expresionRegular = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return expresionRegular.test(string);
 }
+
+const logger = winston.createLogger({
+    level: "info",
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+    transports: [
+        new winston.transports.File({ filename: "./public/uploads/app.log" }),
+    ],
+});
 
 module.exports = {
     base64ToFile,
@@ -172,5 +185,6 @@ module.exports = {
     getAllFields,
     notificationTypes,
     sendEmail,
-    emailIsValid
+    emailIsValid,
+    logger
 }

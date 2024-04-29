@@ -5,6 +5,7 @@ const path = require('path');
 const { dbConnection } = require('./database/config');
 const { socketController } = require('./controllers/socket.controllers');
 const bodyParser = require('body-parser');
+const { logger } = require('./helpers/utils');
 
 class Server {
 
@@ -52,7 +53,8 @@ class Server {
                     }
                 }
             };
-            this.app.use(cors(corsOptions));
+            // this.app.use(cors(corsOptions));
+            this.app.use(cors());
         }else{
             this.app.use(cors());
         }
@@ -67,6 +69,14 @@ class Server {
             req.io = this.io;
             next();
         });
+        this.app.use((req, res, next) => {
+            const fullPath = req.url;
+            const body = req.body;
+            logger.info("---NEW-REQUEST---")
+            logger.info(fullPath)
+            logger.info(body)
+            next();
+        });
     }
 
     routes() {
@@ -74,6 +84,7 @@ class Server {
         this.app.use('/api/payments', require('./routes/payment.routes'));
         this.app.use('/api/users', require('./routes/user.routes'));
         this.app.use('/api/demos', require('./routes/demo.routes'));
+        this.app.use('/api/logs', require('./routes/log.routes'));
         this.app.use('/api/events', require('./routes/event.routes'));
         this.app.use('/api/eventSwoogos', require('./routes/eventSwoogos.routes'));
         this.app.use('/api/registrants', require('./routes/registrant.routes'));

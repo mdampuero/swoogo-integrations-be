@@ -1,10 +1,4 @@
-var socket;
 
-var count = 0;
-var intervalId;
-var transaction_id = "";
-var originalText = '';
-var btnSubmit = '';
 const processError = (payload) => {
     console.log(payload)
 }
@@ -150,23 +144,25 @@ const check = async () => {
         crossDomain: true
     });
 }
-const captureForm = () => {
-    $(registrantForm).submit(function (e) {
-        if (transaction_id) return true;
-        e.preventDefault();
-        setTimeout(function () {
-            if (count == 0 && isFormOK()) {
-                count++;
-                btnSubmit = $(registrantForm + " button[type=\"submit\"]");
-                btnSubmit.attr("disabled", true);
-                payment()
-            } else if (transaction_id != "") {
-                return true
-            }
-        }, 500)
-        return false;
-    });
-}
+// const captureForm = () => {
+//     $(registrantForm).submit(function (e) {
+//         if (transaction_id) {
+//             return true;
+//         }
+//         e.preventDefault();
+//         setTimeout(function () {
+//             if (count == 0 && isFormOK()) {
+//                 count++;
+//                 btnSubmit = $(registrantForm + " button[type=submit]");
+//                 btnSubmit.attr("disabled", true);
+//                 payment()
+//             } else if (transaction_id != "") {
+//                 return true
+//             }
+//         }, 500)
+//         return false;
+//     });
+// }
 
 function sweet() {
     Swal.fire("SweetAlert2 is working!");

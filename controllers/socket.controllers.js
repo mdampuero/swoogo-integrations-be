@@ -1,10 +1,11 @@
 
 
+const { logger } = require('../helpers/utils');
 
 const socketController = (socket) => {
-    console.log("Socket: Conectado");
+    logger.info("Socket: Conectado");
     socket.on('disconnet', () => {
-       console.log("Server: Desconectado")
+       logger.info("Server: Desconectado")
     })
     // socket.on('message', (payload, callback) => {
     //     console.log(payload);

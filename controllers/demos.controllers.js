@@ -1,9 +1,12 @@
 const { response, request } = require("express");
 const Demo = require("../models/demo");
 const { demoQuery } = require('../helpers/demo');
-const { calcPage } = require('../helpers/utils');
+const { calcPage, logger } = require('../helpers/utils');
+// const winston = require("winston");
 
 const demosGet = async (req = request, res = response) => {
+
+
     // const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
     // const host = process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'localhost';
     // const port = process.env.NODE_ENV === 'production' ? '' : ':' + process.env.PORT;
@@ -21,6 +24,7 @@ const demosGet = async (req = request, res = response) => {
             .limit(limit)
             .skip(offset)
     ])
+    logger.info(result);
     res.json({
         total,
         pages: calcPage(total, limit),

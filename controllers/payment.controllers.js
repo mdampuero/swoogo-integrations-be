@@ -4,6 +4,7 @@ var mercadopago = require('mercadopago');
 const Integration = require("../models/integration");
 const Transaction = require("../models/transaction");
 const Registrant = require("../models/registrant");
+const { logger } = require('../helpers/utils');
 
 const createOrder = async (req = request, res = response) => {
 
@@ -19,6 +20,7 @@ const createOrder = async (req = request, res = response) => {
             status: 'empty'
         });
         let errors = [];
+
         items.forEach(async item => {
             const name = item[0];
             const email = item[1];
@@ -61,14 +63,14 @@ const createOrder = async (req = request, res = response) => {
         });
 
         if (errors.length > 0) {
-
+            logger.error(errors)
             res.status(400).json({
                 "result": false,
                 "data": errors
             })
         } else {
-
-            console.log(items_order);
+            logger.info("MercadoPago-ItemsOrder");
+            logger.info(items_order);
             // res.json({
             //     items_order
             // })
@@ -92,7 +94,8 @@ const createOrder = async (req = request, res = response) => {
                 },
                 notification_url: `${process.env.DOMAIN}/api/payments/webhook?integration_id=${integration.id}`
             });
-
+            logger.info("MercadoPago-Order")
+            logger.info(result)
             res.json({
                 "data": result.body,
                 integration
@@ -100,7 +103,7 @@ const createOrder = async (req = request, res = response) => {
         }
 
     } catch (error) {
-        console.log(error)
+        logger.error(error)
         res.status((typeof error.status != "undefined") ? error.status : 500).json({
             "result": false,
             "data": error
@@ -110,6 +113,7 @@ const createOrder = async (req = request, res = response) => {
 }
 
 const backSuccess = (req = request, res = response) => {
+    logger.info("Success")
     res.json({
         "result": true,
         "data": null
@@ -117,6 +121,7 @@ const backSuccess = (req = request, res = response) => {
 }
 
 const backFailure = (req = request, res = response) => {
+    logger.info("Failure")
     res.json({
         "result": true,
         "data": null
@@ -124,6 +129,7 @@ const backFailure = (req = request, res = response) => {
 }
 
 const backPending = (req = request, res = response) => {
+    logger.info("Pensing")
     res.json({
         "result": true,
         "data": null
@@ -133,19 +139,22 @@ const backPending = (req = request, res = response) => {
 const webhook = async (req = request, res = response) => {
     try {
         const payment = req.query;
-        console.log(payment);
+        logger.info("Payment")
+        logger.info(payment)
         let integration = await Integration.findById(payment.integration_id);
-        console.log(integration)
+        logger.info("Integration")
+        logger.info(integration)
         let data;
         if (integration && payment.topic === "payment" && typeof payment.id != "undefined" && payment.id) {
             mercadopago.configure({
                 access_token: integration.access_token
             });
             data = await mercadopago.payment.findById(payment.id);
+            logger.info("MercadoPago-mercadopago.payment.findById")
+            logger.info(data)
             const metadata = data.body.metadata;
-
             let transaction = await Transaction.findById(metadata.transaction.id);
-
+           
             if (transaction && metadata.transaction.status != data.body.status) {
                 transaction.status = data.body.status;
                 transaction.amount = data.body.transaction_amount;
@@ -155,11 +164,14 @@ const webhook = async (req = request, res = response) => {
                 ]);
             }
             if (data.body.status === "approved") {
-                req.io.emit("message", {
+                const socketData ={
                     "transaction_id": transaction.id,
                     "status": data.body.status,
                     "action": "themify.58ecddba064e63f7"
-                });
+                }
+                logger.info("Socket")
+                logger.info(socketData)
+                req.io.emit("message", socketData);
             }
 
             res.json({
@@ -167,13 +179,14 @@ const webhook = async (req = request, res = response) => {
                 "data": data
             })
         }else{
+            logger.warn("Payment not found")
             res.status(404).json({
                 "result": false,
                 "data": null
             });
         }
     } catch (error) {
-        console.log(error)
+        logger.err(error)
         res.status((typeof error.status != "undefined") ? error.status : 500).json({
             "result": false,
             "data": error
