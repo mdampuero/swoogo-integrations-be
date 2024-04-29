@@ -5,6 +5,7 @@ const Registrant = require("../models/registrant");
 const axios = require('axios');
 const { authentication } = require("../helpers/swoogo-auth");
 const FormData = require('form-data');
+const { logger } = require('../helpers/utils');
 
 const webhookPost = async (req = request, res = response) => {
     try {
