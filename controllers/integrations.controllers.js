@@ -37,7 +37,7 @@ const integrationsTransactions = async (req, res = response) => {
 const integrationsGetOne = async (req, res = response) => {
     try {
         const { id } = req.params;
-        const integration = await Integration.findById(id)
+        const integration = await Integration.findOne({ _id:id, isActive: true })
         // .populate({
         //     path : "transactions",
         //     model : "Transaction",

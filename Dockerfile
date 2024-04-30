@@ -1,6 +1,8 @@
 # Dockerfile
 FROM node:latest
 
+RUN npm install -g pm2
+
 WORKDIR /app
 
 COPY package.json .
@@ -12,6 +14,6 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["node", "app.js"]
+CMD ["pm2-runtime", "app.js"]
 
 VOLUME ["/app/public/uploads"]
