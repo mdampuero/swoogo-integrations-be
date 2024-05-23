@@ -35,6 +35,10 @@ const IntegrationSchema = Schema({
         type: Boolean,
         default: true
     },
+    extraOption: {
+        type: Boolean,
+        default: false
+    },
     created_at: {
         type: Date,
         default: new Date()
