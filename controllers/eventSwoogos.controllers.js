@@ -117,11 +117,12 @@ const eventSwoogoRegistrant = async (req = request, res = response) => {
     try {
         const { id } = req.params;
         const { search='', searchBy='first_name' } = req.query;
+        console.log(searchBy+"*contains*"+search,`${process.env.SWOOGO_APIURL}registrants.json?event_id=${id}`);
         const instance = axios.create({
             baseURL: `${process.env.SWOOGO_APIURL}registrants.json?event_id=${id}`,
             params: { 
-                //fields : "first_name,last_name,email,id,company,full_name", 
-                fields : "*", 
+                fields : "first_name,last_name,email,id,company,full_name", 
+                // fields : "*", 
                 search : searchBy+"*contains*"+search,
                 "per-page": 100 
             },
