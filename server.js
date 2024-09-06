@@ -58,6 +58,7 @@ class Server {
         this.app.use('/api/mocks', require('./routes/mock.routes'));
         this.app.use('/api/categories', require('./routes/category.routes'));
         this.app.use('/api/v2/users', require('./routes/publicUsers.routes'));
+        this.app.use('/api/checkins', require('./routes/checkin.routes'));
         this.app.use(express.static(path.join(__dirname, 'public')));
         this.app.get('*', (req, res) => {
             res.sendFile(path.join(__dirname, 'public/index.html'));
