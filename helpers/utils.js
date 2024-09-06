@@ -1,13 +1,10 @@
 const bcryptjs = require('bcryptjs');
-<<<<<<< Updated upstream
-=======
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const validator = require('validator');
 const winston = require("winston");
 const { getSetting } = require('../helpers/setting');
->>>>>>> Stashed changes
 
 const encryptPassword = async (password) => {
     const salt = bcryptjs.genSaltSync(10);
@@ -36,8 +33,6 @@ const buildError = (path, msg, value) => {
     }
 }
 
-<<<<<<< Updated upstream
-=======
 const getValueByKey = (key, object) => {
     return object.hasOwnProperty(key) ? object[key] : null;
 }
@@ -190,14 +185,10 @@ const logger = winston.createLogger({
     ],
 });
 
->>>>>>> Stashed changes
 module.exports = {
     calcPage,
     integrationTypes,
     encryptPassword,
-<<<<<<< Updated upstream
-    buildError
-=======
     buildError,
     getValueByKey,
     getValueOrNull,
@@ -211,5 +202,4 @@ module.exports = {
     emailIsValid,
     isRut,
     logger
->>>>>>> Stashed changes
 }
