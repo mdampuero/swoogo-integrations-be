@@ -150,7 +150,10 @@ const eventSwoogoSessionPost = async (req = request, res = response) => {
         const { sessionId, registrantId } = req.body;
         const scanExists = await Scan.findOne({ sessionId, registrantId });
         if(scanExists){
-            return res.status(400).json(null);
+            return res.status(400).json({
+                "result": false,
+                "data": "Already exists"
+            });
         }
         const instance = axios.create({
             baseURL: `${process.env.SWOOGO_APIURL}registrants/${registrantId}.json?fields=id&expand=`,
@@ -173,7 +176,8 @@ const eventSwoogoSessionPost = async (req = request, res = response) => {
         });
 
     } catch (error) {
-        res.status((typeof error.status != "undefined") ? error.status : 500).json({
+        console.log(error)
+        res.status((typeof error.response != "undefined" && typeof error.response.status != "undefined") ? error.response.status : 500).json({
             "result": false,
             "data": error.message
         })

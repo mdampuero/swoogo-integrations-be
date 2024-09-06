@@ -4,6 +4,7 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const validator = require('validator');
 const winston = require("winston");
+const { getSetting } = require('../helpers/setting');
 
 const encryptPassword = async (password) => {
     const salt = bcryptjs.genSaltSync(10);
@@ -113,8 +114,7 @@ const base64ToFile = async (string) => {
         const fileName = 'archivo_' + Date.now() + '.' + extension;
         const filePath = path.join('public', uploadFolder, fileName);
         // const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-        const schema = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-        const host = process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'localhost';
+        const host = process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'http://localhost';
         const port = process.env.NODE_ENV === 'production' ? '' : ':' + process.env.PORT;
         await new Promise((resolve, reject) => {
             fs.writeFile(filePath, dataBuffer, (err) => {
@@ -133,6 +133,7 @@ const base64ToFile = async (string) => {
 };
 const sendEmail = async (subject, body) => {
     try {
+        const setting = await getSetting();
         var transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port: process.env.SMTP_PORT,
@@ -143,7 +144,7 @@ const sendEmail = async (subject, body) => {
         });
         const mailOptions = {
             from: process.env.SMTP_FROM,
-            to: process.env.SMTP_TO,
+            to: setting.contact_email,
             subject: subject,
             html: `<html><body>${body}</body></html>`
         };
@@ -157,6 +158,27 @@ const sendEmail = async (subject, body) => {
 const emailIsValid = async (string) => {
     const expresionRegular = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return expresionRegular.test(string);
+}
+
+const isRut = async (string) => {
+    const regex = /^[1-9]\d{0,7}-(\d|k|K)$/;
+    if (!regex.test(string)) {
+        return false;
+    }
+    const [body, verifier] = string.split('-');
+    let sum = 0;
+    let multiplier = 2;
+
+    for (let i = body.length - 1; i >= 0; i--) {
+        sum += multiplier * parseInt(body.charAt(i), 10);
+        multiplier = multiplier < 7 ? multiplier + 1 : 2;
+    }
+
+    const expectedVerifier = 11 - (sum % 11);
+    if (expectedVerifier == 11) return verifier == '0';
+    if (expectedVerifier == 10) return verifier == 'K';
+    return verifier == expectedVerifier.toString();
+
 }
 
 const logger = winston.createLogger({
@@ -186,5 +208,6 @@ module.exports = {
     notificationTypes,
     sendEmail,
     emailIsValid,
+    isRut,
     logger
 }

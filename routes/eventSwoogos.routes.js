@@ -25,6 +25,8 @@ router.get('/:id/registrants', [
 router.post('/sessions', [
     check('sessionId', 'The sessionId is required').not().isEmpty(),
     check('registrantId', 'The sessionId is required').not().isEmpty(),
+    check('registrantId', 'The registrantId is numeric').isNumeric(),
+    check('sessionId', 'The sessionId is numeric').isNumeric(),
     validateFields
 ], eventSwoogoSessionPost);
 

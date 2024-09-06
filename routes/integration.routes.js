@@ -1,5 +1,9 @@
 const { Router } = require('express');
-const { integrationsGet, integrationsGetSession, integrationsPut, integrationsPost, integrationsDelete, integrationsGetOne, integrationsStats,integrationsTransactions } = require('../controllers/integrations.controllers');
+const { integrationsGet,
+    integrationsGetSession,
+    integrationsPut, integrationsPost, integrationsDelete, integrationsGetOne, integrationsStats, integrationsTransactions,
+    integrationsRegistrant,
+    integrationsGetBySessionId } = require('../controllers/integrations.controllers');
 const { check } = require('express-validator');
 const { validatJWT } = require('../middlewares/validate-jwt');
 const { isIntegrationTypeValid, checkFieldByType, isIntegrationExist } = require('../middlewares/integration.middleware');
@@ -26,7 +30,7 @@ router.get('/sessions/:id/:sessionId', [
 
 router.get('/stats/get', [
     validatJWT,
-],integrationsStats);
+], integrationsStats);
 
 router.put('/:id', [
     validatJWT,
@@ -44,6 +48,19 @@ router.get('/:id/transactions/', [
     check('id').custom(isIntegrationExist),
     validateFields
 ], integrationsTransactions);
+
+router.post('/:id/registrants/:sessionId', [
+    check('sessionId', 'The sessionId is required').not().isEmpty(),
+    check('id', 'The id is not valid').isMongoId(),
+    check('id').custom(isIntegrationExist),
+    check('registrantIDs', 'The registrantIDs is required').not().isEmpty(),
+    check('registrantIDs', 'The registrantIDs is required').isArray(),
+    validateFields
+], integrationsRegistrant);
+
+router.get('/getBySessionId/:sessionId', [
+    //validateFields
+], integrationsGetBySessionId);
 
 router.post('/', [
     validatJWT,

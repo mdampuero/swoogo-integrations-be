@@ -23,6 +23,9 @@ const SettingSchema = Schema({
     banner_link: {
         type: String,
     },
+    contact_email: {
+        type: String,
+    },
 })
 
 module.exports = model('Setting', SettingSchema);
