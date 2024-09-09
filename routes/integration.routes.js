@@ -1,12 +1,21 @@
 const { Router } = require('express');
 const { integrationsGet,
     integrationsGetSession,
-    integrationsPut, integrationsPost, integrationsDelete, integrationsGetOne, integrationsStats, integrationsTransactions,
+    integrationsPut,
+    integrationsPost,
+    integrationsDelete,
+    integrationsGetOne,
+    integrationsStats,
+    integrationsTransactions,
     integrationsRegistrant,
     integrationsGetBySessionId } = require('../controllers/integrations.controllers');
 const { check } = require('express-validator');
 const { validatJWT } = require('../middlewares/validate-jwt');
-const { isIntegrationTypeValid, checkFieldByType, isIntegrationExist } = require('../middlewares/integration.middleware');
+const {
+    isIntegrationTypeValid,
+    checkFieldByType,
+    isIntegrationExist
+} = require('../middlewares/integration.middleware');
 const { validateFields } = require('../middlewares/validate');
 
 const router = Router();

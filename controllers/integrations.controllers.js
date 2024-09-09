@@ -39,17 +39,7 @@ const integrationsTransactions = async (req, res = response) => {
 const integrationsGetOne = async (req, res = response) => {
     try {
         const { id } = req.params;
-        const integration = await Integration.findById(id)
-        // .populate({
-        //     path : "transactions",
-        //     model : "Transaction",
-        //     pupulate: {
-        //         path: "registrants",
-        //         model: "Registrant",
-        //         select: "email"
-        //     }
-        // })
-
+        const integration = await Integration.findById(id);
         res.json({
             integration
         })
@@ -117,7 +107,7 @@ const integrationsRegistrant = async (req = request, res = response) => {
     try {
         const { id, sessionId } = req.params;
         const { registrantIDs } = req.body;
-        
+
         /* Check integration */
         const integration = await Integration.findById(id);
         if (integration.type != 'CHECKIN') {
@@ -128,7 +118,7 @@ const integrationsRegistrant = async (req = request, res = response) => {
         }
 
         /* Set scan new registrant */
-        for(let i=0; i<registrantIDs.length; i++){
+        for (let i = 0; i < registrantIDs.length; i++) {
             await swoogoRegistrantsSetScan(sessionId, registrantIDs[i])
         }
 
@@ -187,7 +177,8 @@ const integrationsGetBySessionId = async (req = request, res = response) => {
                 "session_id": resp.data.id.toString(),
                 "integration_id": integration.id,
                 "event_id": integration.event_id,
-                "event_name": integration.event.name
+                "event_name": integration.event.name,
+                "extraOption": integration.extraOption
             }
         })
 
