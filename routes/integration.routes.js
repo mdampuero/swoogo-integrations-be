@@ -58,14 +58,14 @@ router.get('/:id/transactions/', [
     validateFields
 ], integrationsTransactions);
 
-router.post('/:id/registrants/:sessionId', [
-    check('sessionId', 'The sessionId is required').not().isEmpty(),
-    check('id', 'The id is not valid').isMongoId(),
-    check('id').custom(isIntegrationExist),
-    check('registrantIDs', 'The registrantIDs is required').not().isEmpty(),
-    check('registrantIDs', 'The registrantIDs is required').isArray(),
-    validateFields
-], integrationsRegistrant);
+// router.post('/:id/registrants/:sessionId', [
+//     check('sessionId', 'The sessionId is required').not().isEmpty(),
+//     check('id', 'The id is not valid').isMongoId(),
+//     check('id').custom(isIntegrationExist),
+//     check('registrantIDs', 'The registrantIDs is required').not().isEmpty(),
+//     check('registrantIDs', 'The registrantIDs is required').isArray(),
+//     validateFields
+// ], integrationsRegistrant);
 
 router.get('/getBySessionId/:sessionId', [
     //validateFields

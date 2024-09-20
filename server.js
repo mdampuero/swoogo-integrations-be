@@ -58,7 +58,7 @@ class Server {
         }else{
             this.app.use(cors());
         }
-        
+
         /** To do: habilitar CORS */
         // this.app.use(cors(corsOptions));
         this.app.use(bodyParser.json({ limit: '50mb' }));
@@ -96,7 +96,7 @@ class Server {
         this.app.use('/api/notifications', require('./routes/notification.routes'));
         this.app.use('/api/settings', require('./routes/setting.routes'));
         this.app.use('/api/v2/users', require('./routes/publicUsers.routes'));
-        this.app.use('/api/checkins', require('./routes/checkin.routes'));
+       // this.app.use('/api/checkins', require('./routes/checkin.routes'));
         this.app.use(express.static(path.join(__dirname, 'public')));
         this.app.get('*', (req, res) => {
             res.sendFile(path.join(__dirname, 'public/index.html'));
@@ -113,5 +113,5 @@ class Server {
         })
     }
 }
-module.exports.io = 
+module.exports.io =
 module.exports = Server;
