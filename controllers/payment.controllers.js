@@ -74,8 +74,11 @@ const createOrder = async (req = request, res = response) => {
             // res.json({
             //     items_order
             // })
-            //transaction.registrants = registrants
-
+            transaction.registrants = registrants
+            transactionMeta={
+                id: transaction.id,
+                status : transaction.status
+            }
             integration.transactions.push(transaction);
             await Promise.all([
                 transaction.save(),
@@ -88,7 +91,8 @@ const createOrder = async (req = request, res = response) => {
             const result = await mercadopago.preferences.create({
                 items: items_order,
                 metadata: {
-                    transaction, labels: {
+                    transaction: transactionMeta,
+                    labels: {
                         btnSubmit: 'Waiting for payment'
                     }
                 },
