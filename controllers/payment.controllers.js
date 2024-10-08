@@ -74,7 +74,7 @@ const createOrder = async (req = request, res = response) => {
             // res.json({
             //     items_order
             // })
-            transaction.registrants = registrants
+            //transaction.registrants = registrants
 
             integration.transactions.push(transaction);
             await Promise.all([
@@ -154,7 +154,7 @@ const webhook = async (req = request, res = response) => {
             logger.info(data)
             const metadata = data.body.metadata;
             let transaction = await Transaction.findById(metadata.transaction.id);
-           
+
             if (transaction && metadata.transaction.status != data.body.status) {
                 transaction.status = data.body.status;
                 transaction.amount = data.body.transaction_amount;
