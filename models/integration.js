@@ -39,13 +39,29 @@ const IntegrationSchema = Schema({
         type: Boolean,
         default: false
     },
+    request: {
+        type: Boolean,
+        default: false
+    },
+    request_label: {
+        type: String
+    },
+    request_field: {
+        type: String
+    },
+    request_input_type: {
+        type: String
+    },
+    request_options: {
+        type: [String]
+    },
     created_at: {
         type: Date,
         default: new Date()
     },
-    transactions: [{ 
-        type: Schema.ObjectId, 
-        ref: 'Transaction' 
+    transactions: [{
+        type: Schema.ObjectId,
+        ref: 'Transaction'
     }]
 })
 

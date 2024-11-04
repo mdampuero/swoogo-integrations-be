@@ -8,6 +8,7 @@ const { integrationsGet,
     integrationsStats,
     integrationsTransactions,
     integrationsRegistrant,
+    integrationsSendRequest,
     integrationsGetBySessionId } = require('../controllers/integrations.controllers');
 const { check } = require('express-validator');
 const { validatJWT } = require('../middlewares/validate-jwt');
@@ -36,6 +37,9 @@ router.get('/sessions/:id/:sessionId', [
     check('id').custom(isIntegrationExist),
     validateFields
 ], integrationsGetSession);
+
+router.post('/request', [
+], integrationsSendRequest);
 
 router.get('/stats/get', [
     validatJWT,

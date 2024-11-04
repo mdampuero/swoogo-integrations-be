@@ -9,7 +9,7 @@ const { log } = require("winston");
 const { swoogoRegistrantsSetScan } = require("../helpers/swoogo-registrants");
 
 const integrationsGet = async (req = request, res = response) => {
-    const { limit, sort, direction, offset, query } = integrationQuery(req);
+    let { limit, sort, direction, offset, query } = integrationQuery(req);
     const [total, result] = await Promise.all([
         Integration.countDocuments(query),
         Integration.find(query)
@@ -17,7 +17,7 @@ const integrationsGet = async (req = request, res = response) => {
             .limit(limit)
             .skip(offset)
     ])
-    res.json({
+    return res.json({
         total,
         pages: calcPage(total, limit),
         limit,
@@ -66,6 +66,24 @@ const integrationsGetSession = async (req, res = response) => {
         })
     } catch (error) {
         res.status((typeof error.status != "undefined") ? error.status : 500).json({
+            "result": false,
+            "data": error
+        })
+    }
+}
+
+const integrationsSendRequest = async (req, res = response) => {
+    try {
+        const body = req.body;
+        /** Update data in Swoogo */
+        const formData = new FormData();
+        formData.append(body.integration.request_field, body.value);
+        await axios.put(`${process.env.SWOOGO_APIURL}registrants/update/${body.registrantId}.json`, formData, {
+            headers: { "Authorization": "Bearer " + await authentication() }
+        });
+        return res.json(body)
+    } catch (error) {
+        return res.status((typeof error.status != "undefined") ? error.status : 500).json({
             "result": false,
             "data": error
         })
@@ -248,5 +266,6 @@ module.exports = {
     integrationsTransactions,
     integrationsGetSession,
     integrationsRegistrant,
-    integrationsGetBySessionId
+    integrationsGetBySessionId,
+    integrationsSendRequest
 }

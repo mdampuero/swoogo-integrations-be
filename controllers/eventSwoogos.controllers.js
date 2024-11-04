@@ -86,7 +86,7 @@ const eventSwoogoSessionDownload = async (req = request, res = response) => {
         items.forEach(item => {
             data.push({ id: item.id, name: item.name, link: `${process.env.QR_SCAN}?i=${integrationId}&e=${item.event_id}&s=${item.id}`})
         });
-        
+
         csvWriter.writeRecords(data)
         .then(() => {
             res.download(fileName, (err) => {
@@ -103,7 +103,7 @@ const eventSwoogoSessionDownload = async (req = request, res = response) => {
         });
 
 
-        
+
     } catch (error) {
         res.status((typeof error.status != "undefined") ? error.status : 500).json({
             "result": false,
@@ -117,14 +117,14 @@ const eventSwoogoRegistrant = async (req = request, res = response) => {
     try {
         const { id } = req.params;
         const { search='', searchBy='first_name' } = req.query;
-        console.log(searchBy+"*contains*"+search,`${process.env.SWOOGO_APIURL}registrants.json?event_id=${id}`);
+        //console.log(searchBy+"*contains*"+search,`${process.env.SWOOGO_APIURL}registrants.json?event_id=${id}`);
         const instance = axios.create({
             baseURL: `${process.env.SWOOGO_APIURL}registrants.json?event_id=${id}`,
-            params: { 
-                fields : "first_name,last_name,email,id,company,full_name", 
-                // fields : "*", 
+            params: {
+                fields : "first_name,last_name,email,id,company,full_name",
+                // fields : "*",
                 search : searchBy+"*contains*"+search,
-                "per-page": 100 
+                "per-page": 100
             },
             headers: { "Authorization": "Bearer "+ await authentication() }
         });

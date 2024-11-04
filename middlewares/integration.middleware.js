@@ -45,8 +45,18 @@ const checkFieldByType = async (req = request, res, next) => {
 
             break;
         case 'CHECKIN':
+            if (typeof body.request == "undefined" || body.request == 1){
+                if (typeof body.request_label == "undefined" || !body.request_label){
+                    errors.push(buildError("request_label", "El campo 'Label' es requerido", "request_label"));
+                }
+                if (typeof body.request_field == "undefined" || !body.request_field){
+                    errors.push(buildError("request_field", "El campo 'Campo (ID de swoogo)' es requerido", "request_field"));
+                }
+                if (typeof body.request_input_type == "undefined" || !body.request_input_type){
+                    errors.push(buildError("request_input_type", "El campo 'Tipo de respuesta' es requerido", "request_input_type"));
+                }
 
-
+            }
             break;
     }
     if (errors.length > 0) {
