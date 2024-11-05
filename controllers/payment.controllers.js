@@ -5,6 +5,8 @@ const Integration = require("../models/integration");
 const Transaction = require("../models/transaction");
 const Registrant = require("../models/registrant");
 const { logger } = require('../helpers/utils');
+const axios = require('axios');
+const { authentication } = require("../helpers/swoogo-auth");
 
 const createOrder = async (req = request, res = response) => {
 
@@ -22,26 +24,26 @@ const createOrder = async (req = request, res = response) => {
         let errors = [];
 
         items.forEach(async item => {
-            const name = item[0];
-            const email = item[1];
-            const description = item[2];
-            let unit_price = item[3];
+            const registrantId = item[0];
+            const name = item[1];
+            const email = item[2];
+            const description = item[3];
+            let unit_price = item[4];
 
+            if (typeof registrantId == "undefined" || registrantId.length <= 0) {
+                errors.push("Registrant ID invalid");
+            }
             if (typeof name == "undefined" || name.length <= 0) {
                 errors.push("Name invalid");
-                return;
             }
             if (typeof email == "undefined" || email.length <= 0) {
                 errors.push("Email invalid");
-                return;
             }
             if (typeof description == "undefined" || description.length <= 0) {
                 errors.push("Description invalid");
-                return;
             }
             if (typeof unit_price == "undefined" || unit_price.length <= 0) {
                 errors.push("Unit price invalid");
-                return;
             }
             unit_price = unit_price.replace(",", "");
             unit_price = unit_price.replace(".", "");
@@ -53,6 +55,7 @@ const createOrder = async (req = request, res = response) => {
                 "unit_price": unit_price,
             });
             const registrant = new Registrant({
+                swoogo_id: registrantId,
                 email: email,
                 price: unit_price,
                 transaction,
@@ -75,9 +78,9 @@ const createOrder = async (req = request, res = response) => {
             //     items_order
             // })
             transaction.registrants = registrants
-            transactionMeta={
+            transactionMeta = {
                 id: transaction.id,
-                status : transaction.status
+                status: transaction.status
             }
             integration.transactions.push(transaction);
             await Promise.all([
@@ -168,7 +171,7 @@ const webhook = async (req = request, res = response) => {
                 ]);
             }
             if (data.body.status === "approved") {
-                const socketData ={
+                const socketData = {
                     "transaction_id": transaction.id,
                     "status": data.body.status,
                     "action": "themify.58ecddba064e63f7"
@@ -176,15 +179,24 @@ const webhook = async (req = request, res = response) => {
                 logger.info("Socket")
                 logger.info(socketData)
                 req.io.emit("message", socketData);
+
+                transaction.registrants.forEach(async registrant => {
+                    /** Update data in Swoogo */
+                    const formData = new FormData();
+                    formData.append('c_3473417', '17536652');
+                    const resp = await axios.put(`${process.env.SWOOGO_APIURL}registrants/update/${registrant.swoogo_id}.json`, formData, {
+                        headers: { "Authorization": "Bearer " + await authentication() }
+                    });
+                });
             }
 
             res.json({
                 "result": true,
                 "data": data
             })
-        }else{
+        } else {
             logger.warn("Payment not found")
-            res.status(404).json({
+            res.status(200).json({
                 "result": false,
                 "data": null
             });

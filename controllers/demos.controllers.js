@@ -1,8 +1,12 @@
 const { response, request } = require("express");
 const Demo = require("../models/demo");
+const Transaction = require("../models/transaction");
 const { demoQuery } = require('../helpers/demo');
 const { calcPage, logger } = require('../helpers/utils');
-// const winston = require("winston");
+const axios = require('axios');
+
+const { authentication } = require("../helpers/swoogo-auth");
+const FormData = require('form-data');
 
 const demosGet = async (req = request, res = response) => {
 
@@ -43,6 +47,24 @@ const demosGetOne = async (req, res = response) => {
 
 const simulPay = async (req, res = response) => {
     const { transaction_id } = req.body;
+    let transaction = await Transaction.findById(transaction_id).populate({
+        path: "registrants",
+        model: "Registrant"
+    });
+
+    transaction.status = "approved";
+    transaction.amount = "123";
+    transaction.registrants.forEach(async registrant => {
+        /** Update data in Swoogo */
+        const formData = new FormData();
+        formData.append('c_3473417', '17536652');
+        const resp = await axios.put(`${process.env.SWOOGO_APIURL}registrants/update/${registrant.swoogo_id}.json`, formData, {
+            headers: { "Authorization": "Bearer " + await authentication() }
+        });
+    });
+    await Promise.all([
+        transaction.save()
+    ]);
 
     req.io.emit("message", {
         "transaction_id": transaction_id,
