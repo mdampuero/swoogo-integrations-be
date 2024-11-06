@@ -2,7 +2,7 @@ const { response, request } = require("express");
 const Integration = require("../models/integration");
 const Transaction = require("../models/transaction");
 const { integrationQuery } = require('../helpers/integration');
-const { calcPage } = require('../helpers/utils');
+const { calcPage, base64ToFile } = require('../helpers/utils');
 const axios = require('axios');
 const { authentication } = require("../helpers/swoogo-auth");
 const { log } = require("winston");
@@ -98,6 +98,8 @@ const integrationsStats = async (req, res = response) => {
 
 const integrationsPost = async (req, res = response) => {
     const { id, ...body } = req.body;
+    if (body.pictureBackgroundBase64)
+        body.pictureBackground = await base64ToFile(req.body.pictureBackgroundBase64);
     const integration = new Integration(body);
     await integration.save();
     res.json({
@@ -107,7 +109,10 @@ const integrationsPost = async (req, res = response) => {
 
 const integrationsPut = async (req, res = response) => {
     const { id } = req.params;
-    const integration = await Integration.findByIdAndUpdate(id, req.body, { new: true });
+    const body = req.body;
+    if (body.pictureBackgroundBase64)
+        body.pictureBackground = await base64ToFile(body.pictureBackgroundBase64);
+    const integration = await Integration.findByIdAndUpdate(id, body, { new: true });
     res.json({
         integration
     })

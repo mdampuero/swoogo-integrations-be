@@ -59,6 +59,9 @@ const IntegrationSchema = Schema({
         type: Date,
         default: new Date()
     },
+    pictureBackground: {
+        type: String,
+    },
     transactions: [{
         type: Schema.ObjectId,
         ref: 'Transaction'
