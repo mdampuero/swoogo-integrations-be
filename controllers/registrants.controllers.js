@@ -39,7 +39,6 @@ const registrantGet = async (req = request, res = response) => {
 
 const registrantPost = async (req, res = response) => {
     const body = req.body;
-    console.log(body);
     const formData = convertJson2Form(body, mapper);
     try {
         const resp = await axios.post(`${process.env.SWOOGO_APIURL}registrants/create.json`, formData, {
@@ -47,7 +46,6 @@ const registrantPost = async (req, res = response) => {
         });
         return res.json({ data: deconstructAnswer(resp.data, mapper) });
     } catch (error) {
-        console.log(error);
         if (error.response) {
             const { errorMessage, statusCode } = parseErrorSwoogo(error);
             return res.status(statusCode).json({
