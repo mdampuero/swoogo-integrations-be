@@ -75,7 +75,6 @@ const integrationsGetSession = async (req, res = response) => {
 const integrationsSendRequest = async (req, res = response) => {
     try {
         const body = req.body;
-        console.log(body);
         /** Update data in Swoogo */
         const formData = new FormData();
         formData.append(body.request_field, body.value);
