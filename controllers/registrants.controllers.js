@@ -39,20 +39,22 @@ const registrantGet = async (req = request, res = response) => {
 
 const registrantPost = async (req, res = response) => {
     const body = req.body;
+    console.log(body);
     const formData = convertJson2Form(body, mapper);
     try {
         const resp = await axios.post(`${process.env.SWOOGO_APIURL}registrants/create.json`, formData, {
             headers: { "Authorization": "Bearer " + await authentication() }
         });
-        res.json({ data: deconstructAnswer(resp.data, mapper) });
+        return res.json({ data: deconstructAnswer(resp.data, mapper) });
     } catch (error) {
+        console.log(error);
         if (error.response) {
             const { errorMessage, statusCode } = parseErrorSwoogo(error);
-            res.status(statusCode).json({
+            return res.status(statusCode).json({
                 "msg": errorMessage
             });
         } else {
-            res.status(500).json({
+            return res.status(500).json({
                 "msg": "Error interno del servidor."
             });
         }
