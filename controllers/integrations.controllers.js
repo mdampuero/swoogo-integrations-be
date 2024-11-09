@@ -77,13 +77,13 @@ const integrationsSendRequest = async (req, res = response) => {
         const body = req.body;
         /** Update data in Swoogo */
         const formData = new FormData();
-        formData.append(body.integration.request_field, body.value);
+        formData.append(body.request_field, body.value);
         await axios.put(`${process.env.SWOOGO_APIURL}registrants/update/${body.registrantId}.json`, formData, {
             headers: { "Authorization": "Bearer " + await authentication() }
         });
-        return res.json(body)
+        return res.json(null)
     } catch (error) {
-        return res.status((typeof error.status != "undefined") ? error.status : 500).json({
+        return res.status(200).json({
             "result": false,
             "data": error
         })
