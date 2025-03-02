@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-const payment = async () => {
+const customPayment = async () => {
     originalText = btnSubmit.find("span").html();
     try {
         socket = io(gateway);
@@ -174,7 +174,7 @@ const check = async () => {
 //                 count++;
 //                 btnSubmit = $(registrantForm + " button[type=submit]");
 //                 btnSubmit.attr("disabled", true);
-//                 payment()
+//                 customPayment()
 //             } else if (transaction_id != "") {
 //                 return true
 //             }
