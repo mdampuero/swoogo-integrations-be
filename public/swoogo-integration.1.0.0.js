@@ -1,8 +1,8 @@
+var customMP = false;
 
 const processError = (payload) => {
     console.log(payload)
 }
-
 var makeJsonFromTable = function (tableID) {
     var tbl = jQuery(tableID)
     var tblhead = jQuery(tbl).find("thead")
@@ -67,14 +67,15 @@ function isFormOK() {
 
 function isCustomPaymentSelected() {
     const customPayment = document.querySelector('input[name="Registrant[payment_method]"][value="custom"]');
-    return customPayment.checked;
+    customMP = customPayment.checked;
+    return customMP;
 }
 
 
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('input[name="Registrant[payment_method]"]').forEach(input => {
         input.addEventListener("change", function () {
-            //console.log(isCustomPaymentSelected()); // Verifica cada vez que cambia la selección
+            isCustomPaymentSelected();
         });
     });
 });

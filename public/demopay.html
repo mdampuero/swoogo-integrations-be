@@ -8,7 +8,49 @@
     <link href="https://assets.swoogo.com/plugins/bootstrap/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"
         integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-        <script>var socket;var count = 0;var intervalId;var transaction_id = "";var originalText = '';var btnSubmit = '';</script> <script type="text/javascript" src="http://localhost:3000/swoogo-integration.1.0.0.js"></script> <script> const integration_id="654d75005b292b72e6aca713"; const gateway="http://localhost:3000/"; const registrantForm="#registrant-form"; const mode="prod"; const captureForm = () => { $(registrantForm).submit(function (e) { if (transaction_id) { return true; } e.preventDefault(); setTimeout(function () { if (count == 0 && isFormOK()) { count++; btnSubmit = $(registrantForm + " button[type=submit]"); btnSubmit.attr("disabled", true); customPayment() } else if (transaction_id != "") { return true } }, 500); return false; }); }; jQuery(function(){captureForm()});</script>
+        <script>
+            var socket;
+            var count = 0;
+            var intervalId;
+            var transaction_id = "";
+            var originalText = '';
+            var btnSubmit = '';
+        </script>
+
+        <script type="text/javascript" src="http://localhost:3000/swoogo-integration.1.0.0.js"></script>
+
+        <script>
+            const integration_id = "654d75005b292b72e6aca713";
+            const gateway = "http://localhost:3000/";
+            const registrantForm = "#registrant-form";
+            const mode = "prod";
+            const captureForm = () => {
+                $(registrantForm).submit(function (e) {
+                    if(customMP){
+                        if (transaction_id) {
+                            return true;
+                        }
+                        e.preventDefault();
+                        setTimeout(function () {
+                            if (count == 0 && isFormOK()) {
+                                count++;
+                                btnSubmit = $(registrantForm + " button[type=submit]");
+                                btnSubmit.attr("disabled", true);
+                                customPayment();
+                            } else if (transaction_id !== "") {
+                                return true;
+                            }
+                        }, 500);
+                        return false;
+                    }
+                });
+            };
+
+            jQuery(function () {
+                captureForm();
+            });
+        </script>
+
 </head>
 
 <body>
