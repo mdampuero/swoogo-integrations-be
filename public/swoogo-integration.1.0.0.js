@@ -51,15 +51,34 @@ const createOrder = async () => {
 }
 function isFormOK() {
     let isOK = true;
-    $(registrantForm + " :input").each(function (index, element) {
-        if ($(element).attr("aria-invalid") == "true") {
-            isOK = false;
-            return;
-        }
+    if(isCustomPaymentSelected()){
+        $(registrantForm + " :input").each(function (index, element) {
+            if ($(element).attr("aria-invalid") == "true") {
+                isOK = false;
+                return;
+            }
 
-    });
+        });
+    }else{
+        return false;
+    }
     return isOK;
 }
+
+function isCustomPaymentSelected() {
+    const customPayment = document.querySelector('input[name="Registrant[payment_method]"][value="custom"]');
+    return customPayment.checked;
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('input[name="Registrant[payment_method]"]').forEach(input => {
+        input.addEventListener("change", function () {
+            //console.log(isCustomPaymentSelected()); // Verifica cada vez que cambia la selección
+        });
+    });
+});
+
 const payment = async () => {
     originalText = btnSubmit.find("span").html();
     try {

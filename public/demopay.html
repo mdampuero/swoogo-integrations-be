@@ -135,17 +135,81 @@
                 </div>
                 <div id="w_41588190" class="widget v_52318906 swoogo-payment">
                     <div id="registrant-payment_method" class="field-registrant-payment_method">
+                        <div class="v_79353789">
+
+                            <div class="radio">
+                                <label class="control-label">
+                                    <input type="radio" name="Registrant[payment_method]" value="credit_card" class="payment_method">
+                                    Pago en USD        </label>
+                            </div>
+
+
+                                                    <div id="credit_card_settings" class="panel panel-default payment-method-settings no-address-border" style="display: none;">    <div class="panel-body">
+
+                                    <input type="hidden" id="transaction-idempotency_key" name="Transaction[idempotency_key]" value="67c44e61a9c884.12669215">    <div class="credit-card-wrapper hidden-xs" data-jp-card-initialized="true"><div class="jp-card-container" style="transform: scale(0.857143);"><div class="jp-card jp-card-unknown"><div class="jp-card-front"><div class="jp-card-logo jp-card-elo"><div class="e">e</div><div class="l">l</div><div class="o">o</div></div><div class="jp-card-logo jp-card-visa">Visa</div><div class="jp-card-logo jp-card-visaelectron">Visa<div class="elec">Electron</div></div><div class="jp-card-logo jp-card-mastercard">Mastercard</div><div class="jp-card-logo jp-card-maestro">Maestro</div><div class="jp-card-logo jp-card-amex"></div><div class="jp-card-logo jp-card-discover">discover</div><div class="jp-card-logo jp-card-unionpay">UnionPay</div><div class="jp-card-logo jp-card-dinersclub"></div><div class="jp-card-logo jp-card-hipercard">Hipercard</div><div class="jp-card-logo jp-card-troy">troy</div><div class="jp-card-logo jp-card-dankort"><div class="dk"><div class="d"></div><div class="k"></div></div></div><div class="jp-card-logo jp-card-jcb"><div class="j">J</div><div class="c">C</div><div class="b">B</div></div><div class="jp-card-lower"><div class="jp-card-shiny"></div><div class="jp-card-cvc jp-card-display jp-card-invalid">•••</div><div class="jp-card-number jp-card-display jp-card-invalid">•••• •••• •••• ••••</div><div class="jp-card-name jp-card-display jp-card-valid">dsadsa dsadsdsa@dsadsa.com</div><div class="jp-card-expiry jp-card-display jp-card-invalid" data-before="mm/yyyy" data-after="valid
+                        date">••/••</div></div></div><div class="jp-card-back"><div class="jp-card-bar"></div><div class="jp-card-cvc jp-card-display jp-card-invalid">•••</div><div class="jp-card-shiny"></div></div></div></div></div>
+                            <div class="form-group highlight-addon field-transaction-card_number required">
+                        <label class="form-label has-star control-label" for="transaction-card_number">Número de tarjeta</label>
+
+                        <input type="tel" id="transaction-card_number" class="form-control jp-card-invalid unknown" name="Transaction[card_number]" aria-describedby="error-transaction-card_number" autocomplete="cc-number" data-types="amex,mastercard,visa" aria-required="true">
+
+                        <div id="error-transaction-card_number" class="help-block help-block-error"></div>
+
+                        </div><div class="form-group highlight-addon field-transaction-name_on_card required">
+                        <label class="form-label has-star control-label" for="transaction-name_on_card">Nombre en la tarjeta</label>
+
+                        <input type="text" id="transaction-name_on_card" class="form-control jp-card-valid" name="Transaction[name_on_card]" value="dsadsa dsadsdsa@dsadsa.com" aria-describedby="error-transaction-name_on_card" autocomplete="cc-name" aria-required="true">
+
+                        <div id="error-transaction-name_on_card" class="help-block help-block-error"></div>
+
+                        </div><div class="form-group highlight-addon field-transaction-expiry_date required">
+                        <label class="form-label has-star control-label" for="transaction-expiry_date">Fecha de caducidad</label>
+
+                        <input type="tel" id="transaction-expiry_date" class="form-control jp-card-invalid" name="Transaction[expiry_date]" aria-describedby="error-transaction-expiry_date" autocomplete="cc-exp" placeholder="mm / yy" aria-required="true">
+
+                        <div id="error-transaction-expiry_date" class="help-block help-block-error"></div>
+
+                        </div><div class="form-group highlight-addon field-transaction-cvc required">
+                        <label class="form-label has-star control-label" for="transaction-cvc">CVC</label>
+
+                        <input type="text" id="transaction-cvc" class="form-control jp-card-invalid" name="Transaction[cvc]" aria-describedby="error-transaction-cvc" autocomplete="cc-csc" aria-required="true">
+
+                        <div id="error-transaction-cvc" class="help-block help-block-error"></div>
+
+                        </div>
+                                    <hr>
+
+
+                                <div class="po_number hidden">
+                                            </div>
+
+                                <div class="billing_address ">
+                                            </div>
+
+                            </div>
+
+                            </div></div>
                         <div class="v_52318806">
 
                             <div class="radio">
                                 <label class="control-label">
-                                    <input type="radio" name="Registrant[payment_method]" value="custom"
-                                        checked="checked" class="payment_method">
-                                    Pago en línea </label>
+                                    <input type="radio" name="Registrant[payment_method]" value="custom" class="payment_method">
+                                    Tarjeta de crédito o debito        </label>
                             </div>
 
-                        </div>
-                    </div>
+
+                                                    <div id="custom_settings" class="panel panel-default payment-method-settings no-address-border" style="display: none;">    <div class="panel-body">
+                                <div>MercadoPago</div>
+
+                                <div class="po_number hidden">
+                                            </div>
+
+                                <div class="billing_address hidden">
+                                            </div>
+
+                            </div>
+
+                            </div></div><div class="help-block"></div></div>
                     <div class="help-block"></div>
                 </div>
                 <p style="display:none;" class="no-balance-due">
