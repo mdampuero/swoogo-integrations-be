@@ -11,3 +11,12 @@ After run the application
 ```
 nodemon app.js
 ```
+
+## DEPLOY
+
+```
+cd hosting/swoogo-integrations-be
+git pull
+./install 3000
+```
+
