@@ -35,6 +35,13 @@ const IntegrationSchema = Schema({
         type: Boolean,
         default: true
     },
+    camaraEnabled: {
+        type: Boolean,
+        default: true
+    },
+    textAction: {
+        type: String
+    },
     extraOption: {
         type: Boolean,
         default: false
