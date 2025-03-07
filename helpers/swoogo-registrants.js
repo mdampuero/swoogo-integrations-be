@@ -17,7 +17,7 @@ const swoogoRegistrantsGetByRut = async (eventId, rut) => {
         const { items } = resp.data;
         if (items.length != 1)
             throw {}
-        
+
         return items[0];
     } catch (error) {
         return null;
@@ -41,7 +41,7 @@ const swoogoRegistrantsIsScanned = async (eventId, sessionId, registranId) => {
         const { items } = resp.data;
         if (items.length == 0)
             throw { }
-        
+
         return true;
     } catch (error) {
         return false;
@@ -56,7 +56,19 @@ const swoogoRegistrantsSetScan = async (sessionId, registrantId) => {
         const { data } = respPost;
         if (!data)
             throw { }
-        
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+const swoogoSendRequest = async (registrantId, field) => {
+    try {
+        const formData = new FormData();
+        formData.append(field.name, field.value);
+        await axios.put(`${process.env.SWOOGO_APIURL}registrants/update/${registrantId}.json`, formData, {
+            headers: { "Authorization": "Bearer " + await authentication() }
+        });
         return true;
     } catch (error) {
         return false;
@@ -66,5 +78,6 @@ const swoogoRegistrantsSetScan = async (sessionId, registrantId) => {
 module.exports = {
     swoogoRegistrantsGetByRut,
     swoogoRegistrantsIsScanned,
-    swoogoRegistrantsSetScan
+    swoogoRegistrantsSetScan,
+    swoogoSendRequest
 }

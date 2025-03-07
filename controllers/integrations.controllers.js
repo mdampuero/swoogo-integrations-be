@@ -6,7 +6,7 @@ const { calcPage, base64ToFile } = require('../helpers/utils');
 const axios = require('axios');
 const { authentication } = require("../helpers/swoogo-auth");
 const { log } = require("winston");
-const { swoogoRegistrantsSetScan } = require("../helpers/swoogo-registrants");
+const { swoogoRegistrantsSetScan, swoogoSendRequest } = require("../helpers/swoogo-registrants");
 
 const integrationsGet = async (req = request, res = response) => {
     let { limit, sort, direction, offset, query } = integrationQuery(req);
@@ -75,12 +75,10 @@ const integrationsGetSession = async (req, res = response) => {
 const integrationsSendRequest = async (req, res = response) => {
     try {
         const body = req.body;
-        /** Update data in Swoogo */
-        const formData = new FormData();
-        formData.append(body.request_field, body.value);
-        await axios.put(`${process.env.SWOOGO_APIURL}registrants/update/${body.registrantId}.json`, formData, {
-            headers: { "Authorization": "Bearer " + await authentication() }
-        });
+        swoogoSendRequest(body.registrantId, {
+            name: body.request_field,
+            value: body.value
+        })
         return res.json(null)
     } catch (error) {
         return res.status(200).json({
@@ -129,8 +127,7 @@ const integrationsDelete = async (req, res = response) => {
 const integrationsRegistrant = async (req = request, res = response) => {
     try {
         const { id, sessionId } = req.params;
-        const { registrantIDs } = req.body;
-
+        const { registrantIDs, results } = req.body;
         /* Check integration */
         const integration = await Integration.findById(id);
         if (integration.type != 'CHECKIN') {
@@ -143,6 +140,18 @@ const integrationsRegistrant = async (req = request, res = response) => {
         /* Set scan new registrant */
         for (let i = 0; i < registrantIDs.length; i++) {
             await swoogoRegistrantsSetScan(sessionId, registrantIDs[i])
+        }
+
+        /** Send request */
+        if(integration.request){
+            for (let i = 0; i < results.length; i++) {
+                if(typeof results[i].requestValue !== 'undefined'){
+                    swoogoSendRequest(results[i].externalId, {
+                        name: integration.request_field,
+                        value: results[i].requestValue
+                    })
+                }
+            }
         }
 
         /* Get All registrant */

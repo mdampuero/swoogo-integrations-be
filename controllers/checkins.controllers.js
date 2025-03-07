@@ -38,16 +38,13 @@ const byRegistrantIDsPost = async (req = request, res = response) => {
 
     try {
         const { sessionId, eventId, registrantIDs } = req.body;
-        console.log("registrantIDs",registrantIDs)
-        console.log("sessionId",sessionId)
-        console.log("eventId",eventId)
         for(let i=0; i<registrantIDs.length; i++){
             await swoogoRegistrantsSetScan(sessionId, registrantIDs[i])
         }
-        
+
         /* Success */
         return res.json({
-            result: true    
+            result: true
         });
     } catch (error) {
         return res.status((typeof error.response.status != "undefined") ? error.response.status : 500).json({
