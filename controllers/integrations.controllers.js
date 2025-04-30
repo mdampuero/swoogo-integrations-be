@@ -98,6 +98,10 @@ const integrationsPost = async (req, res = response) => {
     const { id, ...body } = req.body;
     if (body.pictureBackgroundBase64)
         body.pictureBackground = await base64ToFile(req.body.pictureBackgroundBase64);
+    if (body.pictureFooterBase64)
+        body.pictureFooter = await base64ToFile(req.body.pictureFooterBase64);
+    if (body.pictureActionBase64)
+        body.pictureAction = await base64ToFile(req.body.pictureActionBase64);
     const integration = new Integration(body);
     await integration.save();
     res.json({
@@ -110,6 +114,10 @@ const integrationsPut = async (req, res = response) => {
     const body = req.body;
     if (body.pictureBackgroundBase64)
         body.pictureBackground = await base64ToFile(body.pictureBackgroundBase64);
+    if (body.pictureFooterBase64)
+        body.pictureFooter = await base64ToFile(body.pictureFooterBase64);
+    if (body.pictureActionBase64)
+        body.pictureAction = await base64ToFile(req.body.pictureActionBase64);
     const integration = await Integration.findByIdAndUpdate(id, body, { new: true });
     res.json({
         integration
