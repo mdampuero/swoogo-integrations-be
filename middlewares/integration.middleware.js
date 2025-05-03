@@ -44,7 +44,7 @@ const checkFieldByType = async (req = request, res, next) => {
                 errors.push(buildError("access_token", "El campo 'access_token' es requerido", "access_token"));
             if (typeof body.email_enabled == "undefined" || body.email_enabled == 1){
                 if (typeof body.email_type == "undefined" || !body.email_type){
-                    errors.push(buildError("email_type", "El campo 'Label' es requerido", "email_type"));
+                    errors.push(buildError("email_type", "El campo 'Tipo email (Swoogo)' es requerido", "email_type"));
                 }
             }
             break;
@@ -54,7 +54,7 @@ const checkFieldByType = async (req = request, res, next) => {
 
             if (typeof body.request == "undefined" || body.request == 1){
                 if (typeof body.request_label == "undefined" || !body.request_label){
-                    errors.push(buildError("request_label", "El campo 'Tipo email (Swoogo)' es requerido", "request_label"));
+                    errors.push(buildError("request_label", "El campo 'Label' es requerido", "request_label"));
                 }
                 if (typeof body.request_input_type == "undefined" || !body.request_input_type){
                     errors.push(buildError("request_input_type", "El campo 'Tipo de respuesta' es requerido", "request_input_type"));
