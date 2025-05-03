@@ -176,7 +176,7 @@ const eventSwoogoSessionPost = async (req = request, res = response) => {
         });
 
     } catch (error) {
-        console.log(error)
+        //console.log(error)
         res.status((typeof error.response != "undefined" && typeof error.response.status != "undefined") ? error.response.status : 500).json({
             "result": false,
             "data": error.message

@@ -4,20 +4,20 @@ const { authentication } = require("../helpers/swoogo-auth");
 const { parseErrorSwoogo, convertJson2Form, getString, deconstructAnswer, getAllFields } = require("../helpers/utils");
 
 const mapper = {
-    "id"                 : "id",
-    "first_name"         : "first_name",
-    "last_name"          : "last_name",
-    "email"              : "email",
-    "mobile_phone"       : "mobile_phone",
-    "job_title"          : "job_title",
-    "company"            : "company",
+    "id": "id",
+    "first_name": "first_name",
+    "last_name": "last_name",
+    "email": "email",
+    "mobile_phone": "mobile_phone",
+    "job_title": "job_title",
+    "company": "company",
     "registration_status": "registration_status",
-    "external_id"        : "c_3803254",
-    "assistant_type"     : "c_3803393",
-    "country"            : "c_3803253",
+    "external_id": "c_3803254",
+    "assistant_type": "c_3803393",
+    "country": "c_3803253",
     "company_description": "c_3803255",
-    "company_logo"       : "c_3803395",
-    "company_web"        : "c_3803396"
+    "company_logo": "c_3803395",
+    "company_web": "c_3803396"
 }
 
 const getAll = async (req = request, res = response) => {
@@ -47,13 +47,33 @@ const getAll = async (req = request, res = response) => {
 
 const post = async (req, res = response) => {
     const body = req.body;
-    const formData = convertJson2Form(body, mapper);
-    formData.append('event_id', req.integration.event_id);
+
     try {
+        const formData = convertJson2Form(body, mapper);
+        formData.append('event_id', req.integration.event_id);
         const resp = await axios.post(`${process.env.SWOOGO_APIURL}registrants/create.json`, formData, {
             headers: { "Authorization": "Bearer " + await authentication() }
         });
-        res.json({ data: deconstructAnswer(resp.data, mapper) });
+        const data = deconstructAnswer(resp.data, mapper);
+
+        /**
+         * Envío de email a registrante
+         */
+        if (typeof req.integration.email_enabled != 'undefined' && req.integration.email_enabled == 1 && req.integration.email_type) {
+            try {
+                const registrant_id = data.id;
+                const email_type = req.integration.email_type;
+
+                const respEmail = await axios.post(`${process.env.SWOOGO_APIURL}registrants/${registrant_id}/trigger-email/${email_type}`, [], {
+                    headers: { "Authorization": "Bearer " + await authentication() }
+                });
+                console.log("Email enviado a registrante: ", respEmail.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        res.json({ data });
     } catch (error) {
         if (error.response) {
             const { errorMessage, statusCode } = parseErrorSwoogo(error);

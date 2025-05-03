@@ -20,7 +20,8 @@ const integrationTypes = () => {
     return [
         'MERCADOPAGO',
         'WEBSERVICE',
-        'CHECKIN'
+        'CHECKIN',
+        'REGISTER'
     ]
 }
 
@@ -192,6 +193,25 @@ const logger = winston.createLogger({
     ],
 });
 
+const calculateRutWithCheckDigit = (rut) => {
+    const cleanRut = rut.toString().replace(/[^0-9]/g, ''); // Limpia cualquier carácter no numérico
+    let sum = 0;
+    let multiplier = 2;
+
+    for (let i = cleanRut.length - 1; i >= 0; i--) {
+        sum += parseInt(cleanRut.charAt(i)) * multiplier;
+        multiplier = multiplier === 7 ? 2 : multiplier + 1;
+    }
+
+    const remainder = 11 - (sum % 11);
+    const checkDigit =
+        remainder === 11 ? '0' : remainder === 10 ? 'K' : remainder.toString();
+
+    return `${cleanRut}-${checkDigit}`;
+};
+
+const cleanRut = rut => rut.split('-')[0];
+
 module.exports = {
     base64ToFile,
     calcPage,
@@ -209,5 +229,7 @@ module.exports = {
     sendEmail,
     emailIsValid,
     isRut,
-    logger
+    logger,
+    calculateRutWithCheckDigit,
+    cleanRut
 }

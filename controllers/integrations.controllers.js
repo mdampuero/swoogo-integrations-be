@@ -1,12 +1,18 @@
 const { response, request } = require("express");
 const Integration = require("../models/integration");
 const Transaction = require("../models/transaction");
+const Checkin = require("../models/checkin");
 const { integrationQuery } = require('../helpers/integration');
 const { calcPage, base64ToFile } = require('../helpers/utils');
 const axios = require('axios');
 const { authentication } = require("../helpers/swoogo-auth");
 const { log } = require("winston");
 const { swoogoRegistrantsSetScan, swoogoSendRequest } = require("../helpers/swoogo-registrants");
+const { localRegistrantsSetScan, localSendRequest } = require("../helpers/local-registrants");
+const fs = require('fs');
+const { createObjectCsvWriter } = require('csv-writer');
+const { format } = require('date-fns');
+const checkin = require("../models/checkin");
 
 const integrationsGet = async (req = request, res = response) => {
     let { limit, sort, direction, offset, query } = integrationQuery(req);
@@ -34,6 +40,76 @@ const integrationsTransactions = async (req, res = response) => {
     res.json({
         data: transactions
     })
+}
+
+const integrationsCheckins = async (req, res = response) => {
+    const { id } = req.params;
+    const chekins = await Checkin.find({ integration: id });
+    res.json({
+        data: chekins
+    })
+}
+
+const integrationsCheckinsDelete = async (req, res = response) => {
+    try {
+        const { id } = req.params;
+
+        const result = await Checkin.deleteMany({ integration: id });
+
+        res.json({
+            message: 'All checkins deleted successfully.',
+            deletedCount: result.deletedCount
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'An error occurred while deleting checkins.',
+            error
+        });
+    }
+};
+
+const integrationsCheckinsDownloads = async (req, res = response) => {
+    const { id } = req.params;
+    let data = [];
+    const integration = await Integration.findById(id);
+    const items = await Checkin.find({ integration: id });
+    const fileName = 'Checkins_' + id + '.csv';
+    let headers = [
+        { id: 'rut', title: 'RUT' },
+        { id: 'created', title: 'Fecha' }
+    ];
+    if (integration.request) {
+        headers.push({ id: 'request', title: integration.request_label });
+    }
+
+    const csvWriter = createObjectCsvWriter({
+        path: fileName,
+        header: headers
+    });
+    items.forEach(item => {
+        const friendlyDate = format(new Date(item.created_at), 'dd/MM/yyyy HH:mm');
+        let object = { rut: item.document, created: friendlyDate };
+        if (integration.request) {
+            object.request = item.request_value;
+        }
+       // console.log('object', object);
+        data.push(object);
+    });
+
+    csvWriter.writeRecords(data)
+        .then(() => {
+            res.download(fileName, (err) => {
+                if (err) {
+                    console.error('Error al descargar el archivo:', err);
+                } else {
+                    // Elimina el archivo después de enviarlo
+                    fs.unlinkSync(fileName);
+                }
+            });
+        })
+        .catch((error) => {
+            res.status(500).send('Error al crear el archivo CSV.');
+        });
 }
 
 const integrationsGetOne = async (req, res = response) => {
@@ -75,10 +151,18 @@ const integrationsGetSession = async (req, res = response) => {
 const integrationsSendRequest = async (req, res = response) => {
     try {
         const body = req.body;
-        swoogoSendRequest(body.registrantId, {
-            name: body.request_field,
-            value: body.value
-        })
+        const integration = await Integration.findById(body.integrationId);
+        if(integration.type == 'REGISTER'){
+            localSendRequest(body.registrantId, integration, {
+                name: body.request_label,
+                value: body.value
+            })
+        }else{
+            swoogoSendRequest(body.registrantId, {
+                name: body.request_field,
+                value: body.value
+            })
+        }
         return res.json(null)
     } catch (error) {
         return res.status(200).json({
@@ -136,9 +220,12 @@ const integrationsRegistrant = async (req = request, res = response) => {
     try {
         const { id, sessionId } = req.params;
         const { registrantIDs, results } = req.body;
+        // console.log('registrantIDs', registrantIDs);
+        // console.log('results', results);
+
         /* Check integration */
         const integration = await Integration.findById(id);
-        if (integration.type != 'CHECKIN') {
+        if (integration.type != 'CHECKIN' && integration.type != 'REGISTER') {
             throw {
                 status: 400,
                 message: 'Invalid integration type. Expected CHECKIN.'
@@ -147,41 +234,73 @@ const integrationsRegistrant = async (req = request, res = response) => {
 
         /* Set scan new registrant */
         for (let i = 0; i < registrantIDs.length; i++) {
-            await swoogoRegistrantsSetScan(sessionId, registrantIDs[i])
+            if (integration.type == 'REGISTER') {
+                await localRegistrantsSetScan(registrantIDs[i], integration)
+            } else {
+                await swoogoRegistrantsSetScan(sessionId, registrantIDs[i])
+            }
         }
 
         /** Send request */
-        if(integration.request){
+        if (integration.request) {
             for (let i = 0; i < results.length; i++) {
-                if(typeof results[i].requestValue !== 'undefined'){
-                    swoogoSendRequest(results[i].externalId, {
-                        name: integration.request_field,
-                        value: results[i].requestValue
-                    })
+                if (typeof results[i].requestValue !== 'undefined') {
+                    if (integration.type == 'REGISTER') {
+                        localSendRequest(results[i].externalId, integration, {
+                            name: integration.request_label,
+                            value: results[i].requestValue
+                        });
+                    } else {
+                        swoogoSendRequest(results[i].externalId, {
+                            name: integration.request_field,
+                            value: results[i].requestValue
+                        });
+                    }
                 }
             }
         }
 
-        /* Get All registrant */
-        const allItems = await getAllRegistrant(integration.event_id);
+        if (integration.type == 'CHECKIN') {
+            /* Get All registrant */
+            const allItems = await getAllRegistrant(integration.event_id);
 
-        /* Get All registrant scanned */
-        const allItemsScanned = await getAllRegistrantScanned(integration.event_id, sessionId);
+            /* Get All registrant scanned */
+            const allItemsScanned = await getAllRegistrantScanned(integration.event_id, sessionId);
 
-        const scannedMap = new Map(allItemsScanned.map(item => [item.registrant_id, item.created_at]));
-        const updatedItems = allItems.map(item => ({
-            ...item,
-            rut: item.c_4392417,
-            scanned_at: scannedMap.get(item.id) || null,
-            scanned: (scannedMap.get(item.id)) ? 'SERVER' : null
-        }));
-
-        return res.json({
-            total: updatedItems.length,
-            data: updatedItems
-        });
+            const scannedMap = new Map(allItemsScanned.map(item => [item.registrant_id, item.created_at]));
+            const updatedItems = allItems.map(item => ({
+                ...item,
+                rut: item.c_4392417,
+                scanned_at: scannedMap.get(item.id) || null,
+                scanned: (scannedMap.get(item.id)) ? 'SERVER' : null
+            }));
+            return res.json({
+                total: updatedItems.length,
+                data: updatedItems
+            });
+        } else {
+            const checkins = await Checkin.find({ integration: integration.id });
+            /**
+             * ONLY REGISTER
+             */
+            const updatedItems = checkins.map(item => ({
+                rut: item.document,
+                event_id: integration.event_id,
+                id: item.document.replace(/[^0-9]/g, ''),
+                first_name: "",
+                last_name: "",
+                email: "",
+                scanned_at: item.created_at,
+                scanned: "SERVER"
+            }));
+            return res.json({
+                total: updatedItems.length,
+                data: updatedItems
+            });
+        }
 
     } catch (error) {
+
         return res.status(error.status || 500).json({
             "result": false,
             "message": error.message || "Internal Server Error"
@@ -193,18 +312,28 @@ const integrationsGetBySessionId = async (req = request, res = response) => {
 
     try {
         const { sessionId } = req.params;
-        const instance = axios.create({
-            baseURL: `${process.env.SWOOGO_APIURL}sessions/${sessionId}.json?fields=event_id,id`,
-            headers: { "Authorization": "Bearer " + await authentication() }
-        });
-        const resp = await instance.get();
+        let integration;
+        if (sessionId.startsWith('0')) {
+            integration = await Integration.findOne({
+                access_code: sessionId,
+                isActive: true,
+                isDelete: false,
+                type: 'REGISTER'
+            });
+        } else {
+            const instance = axios.create({
+                baseURL: `${process.env.SWOOGO_APIURL}sessions/${sessionId}.json?fields=event_id,id`,
+                headers: { "Authorization": "Bearer " + await authentication() }
+            });
+            const resp = await instance.get();
+            integration = await Integration.findOne({
+                event_id: resp.data.event_id,
+                isActive: true,
+                isDelete: false,
+                type: 'CHECKIN'
+            });
+        }
 
-        const integration = await Integration.findOne({
-            event_id: resp.data.event_id,
-            isActive: true,
-            isDelete: false,
-            type: 'CHECKIN'
-        })
         if (!integration) {
             throw {
                 response: { status: 404 },
@@ -214,8 +343,9 @@ const integrationsGetBySessionId = async (req = request, res = response) => {
         return res.status(200).json({
             "result": true,
             "data": {
-                "session_id": resp.data.id.toString(),
+                "session_id": sessionId,
                 "integration_id": integration.id,
+                "integration_type": integration.type,
                 "event_id": integration.event_id,
                 "event_name": integration.event.name,
                 "extraOption": integration.extraOption,
@@ -271,8 +401,6 @@ const getAllRegistrantScanned = async (eventId, sessionId) => {
     while (currentPageScanned <= totalPagesScanned) {
         const response = await instance.get(`scans/sessions.json?session_id=${sessionId}&event_id=${eventId}&fields=registrant_id,created_at&per-page=100&page=${currentPageScanned}`);
         const { items, _meta } = response.data;
-        console.log(items);
-        console.log(sessionId, eventId);
         allItemsScanned.push(...items);
 
         totalPagesScanned = _meta.pageCount;
@@ -294,5 +422,8 @@ module.exports = {
     integrationsGetSession,
     integrationsRegistrant,
     integrationsGetBySessionId,
-    integrationsSendRequest
+    integrationsSendRequest,
+    integrationsCheckins,
+    integrationsCheckinsDelete,
+    integrationsCheckinsDownloads
 }

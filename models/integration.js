@@ -15,6 +15,9 @@ const IntegrationSchema = Schema({
     access_token: {
         type: String
     },
+    access_code: {
+        type: String
+    },
     item_title: {
         type: String
     },
@@ -61,6 +64,13 @@ const IntegrationSchema = Schema({
     },
     request_options: {
         type: [String]
+    },
+    email_enabled: {
+        type: Boolean,
+        default: false
+    },
+    email_type: {
+        type: String
     },
     created_at: {
         type: Date,
