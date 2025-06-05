@@ -4,13 +4,14 @@ const { authentication } = require("../helpers/swoogo-auth");
 const { parseErrorSwoogo, convertJson2Form, deconstructAnswer } = require("../helpers/utils");
 
 const mapper = {
-    "id"          : "id",
-    "event_id"    : "event_id",
-    "first_name"  : "first_name",
-    "last_name"   : "last_name",
-    "email"       : "email",
-    "rut"         : "c_4392417",
-    "mobile_phone": "mobile_phone",
+    "id"        : "id",
+    "event_id"  : "event_id",
+    "first_name": "first_name",
+    "last_name" : "last_name",
+    "email"     : "email",
+    "rut"       : "c_4392417",
+    "company"   : "company",
+    "job_title" : "job_title",
 }
 
 const registrantGet = async (req = request, res = response) => {
@@ -39,6 +40,7 @@ const registrantGet = async (req = request, res = response) => {
 
 const registrantPost = async (req, res = response) => {
     const body = req.body;
+    console.log(body)
     const formData = convertJson2Form(body, mapper);
     try {
         const resp = await axios.post(`${process.env.SWOOGO_APIURL}registrants/create.json`, formData, {

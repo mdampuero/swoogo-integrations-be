@@ -65,6 +65,13 @@ const IntegrationSchema = Schema({
     request_options: {
         type: [String]
     },
+    print: {
+        type: Boolean,
+        default: false
+    },
+    print_fields: {
+        type: []
+    },
     email_enabled: {
         type: Boolean,
         default: false

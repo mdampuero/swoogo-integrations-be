@@ -350,6 +350,8 @@ const integrationsGetBySessionId = async (req = request, res = response) => {
                 "event_name": integration.event.name,
                 "extraOption": integration.extraOption,
                 "request": integration.request,
+                "print": integration.print,
+                "print_fields": integration.print_fields,
                 "request_options": integration.request_options,
                 "request_field": integration.request_field,
                 "request_input_type": integration.request_input_type,

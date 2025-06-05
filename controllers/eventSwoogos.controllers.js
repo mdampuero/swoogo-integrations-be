@@ -43,7 +43,7 @@ const eventSwoogoSession = async (req = request, res = response) => {
         const { id } = req.params;
         const instance = axios.create({
             baseURL: `${process.env.SWOOGO_APIURL}sessions.json?event_id=${id}`,
-            params: { fields : "*", "per-page": 100 },
+            params: { fields : "*", "per-page": 200 },
             headers: { "Authorization": "Bearer "+ await authentication() }
         });
         const resp = await instance.get();
