@@ -1,4 +1,4 @@
-var customMP = false;
+var customMP = true;
 
 const processError = (payload) => {
     console.log(payload)
@@ -192,4 +192,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
     dynamicallyLoadScript('https://www.mercadopago.com/org-img/jsapi/mptools/buttons/render.js');
     dynamicallyLoadScript('https://clickgroup-be.latamhosting.com.ar/socket.io/socket.io.js');
     dynamicallyLoadScript('https://cdn.jsdelivr.net/npm/sweetalert2@11');
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const radios = document.querySelectorAll('input[name="Registrant[payment_method]"]');
+    //if (radios.length === 1) {
+        radios[0].checked = true;
+   // }
 });
