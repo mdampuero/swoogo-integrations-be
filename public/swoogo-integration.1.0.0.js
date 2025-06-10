@@ -116,6 +116,7 @@ const customPayment = async () => {
         //         onReady: (data) => { console.log(data) }
         //       }
         // });
+        $('#site-nav').css('z-index','200');
         $MPC.openCheckout({
             url: urlInitPoint,
             mode: "modal",
